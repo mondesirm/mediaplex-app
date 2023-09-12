@@ -29,9 +29,9 @@ class _SelectScreenState extends State<SelectScreen> {
       body: Stack(children: [
         Container(decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: FractionalOffset(0.0, 0.0),
-            end: FractionalOffset(1.0, 0.0),
-            stops: [0.0, 1.0],
+            begin: FractionalOffset(0, 0),
+            end: FractionalOffset(1, 0),
+            stops: [0, 1],
             tileMode: TileMode.clamp,
             colors: [MyTheme.darkBlue, MyTheme.slightBlue]
           ))
@@ -44,7 +44,7 @@ class _SelectScreenState extends State<SelectScreen> {
             children: [
               SizedBox(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 0.5,
+                height: MediaQuery.of(context).size.height * .5,
                 child: CarouselSlider.builder(
                   itemCount: uniqueCountries.length,
                   carouselController: buttonCarouselController,
@@ -52,7 +52,7 @@ class _SelectScreenState extends State<SelectScreen> {
                     aspectRatio: 1,
                     autoPlay: false,
                     initialPage: _current,
-                    viewportFraction: 0.2,
+                    viewportFraction: .2,
                     enlargeCenterPage: true,
                     scrollPhysics: const BouncingScrollPhysics(),
                     onPageChanged: (index, reason) => setState(() => _current = index)
@@ -88,17 +88,14 @@ class _SelectScreenState extends State<SelectScreen> {
                                 children: [
                                   widget.topWidget,
                                   const SizedBox(width: 5),
-                                  Text(
-                                    country_name,
-                                    style: MyTheme.appText(size: 14, weight: FontWeight.w500, color: MyTheme.logoDarkColor)
-                                  )
+                                  Text(country_name, style: MyTheme.appText(size: 14, weight: FontWeight.w500, color: MyTheme.logoDarkColor))
                                 ]
                               )
                             );
                           }))) : null,
                         child: Container(
-                          height: 120,
                           width: 120,
+                          height: 120,
                           decoration: index == _current ? BoxDecoration(
                             borderRadius: BorderRadius.circular(70),
                             border: Border.all(width: 5, color: MyTheme.whiteColor)

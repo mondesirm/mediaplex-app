@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,87 +24,64 @@ class MyTheme {
     Color color = whiteColor,
     required FontWeight weight,
     FontStyle style = FontStyle.normal
-  }) {
-    return GoogleFonts.poppins(
-      color: color,
-      fontSize: size,
-      fontStyle: style,
-      fontWeight: weight,
-      shadows: isShadow
-        ? [BoxShadow(blurRadius: 2, spreadRadius: 3, offset: const Offset(0.1, 0.4), color: Colors.black.withOpacity(0.4))]
-        : null
-    );
-  }
+  }) => GoogleFonts.poppins(
+    color: color,
+    fontSize: size,
+    fontStyle: style,
+    fontWeight: weight,
+    shadows: isShadow
+      ? [BoxShadow(blurRadius: 2, spreadRadius: 3, offset: const Offset(.1, .4), color: Colors.black.withOpacity(.4))]
+      : null
+  );
 
-  static AppBar appBar(BuildContext context, {Widget child = const SizedBox(), bool showSettings = false}) {
-    return AppBar(
-      elevation: 0.0,
-      automaticallyImplyLeading: false,
-      backgroundColor: Colors.transparent,
-      foregroundColor: Colors.transparent,
-      title: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        textBaseline: TextBaseline.ideographic,
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: LinearGradient(
-                stops: const [0.0, 1.0],
-                tileMode: TileMode.clamp,
-                end: const FractionalOffset(1.0, 0.0),
-                begin: const FractionalOffset(0.0, 0.0),
-                colors: [
-                  MyTheme.logoDarkColor,
-                  MyTheme.logoLightColor.withOpacity(0.6)
-                ]
-              )
+  static AppBar appBar(BuildContext context, {Widget child = const SizedBox(), bool showSettings = false}) => AppBar(
+    elevation: 0,
+    automaticallyImplyLeading: false,
+    backgroundColor: Colors.transparent,
+    foregroundColor: Colors.transparent,
+    title: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      textBaseline: TextBaseline.ideographic,
+      children: [
+        SvgPicture.asset('logo.svg', height: 20),
+        const SizedBox(width: 20),
+        Center(child: Container(width: 1.5, height: 40, color: MyTheme.whiteColor.withOpacity(.5))),
+        const SizedBox(width: 20),
+        child,
+        const Spacer(),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: showSettings ? [
+            IconButton(
+              icon: const Icon(Icons.favorite, size: 25, color: MyTheme.logoLightColor),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavScreen()))
             ),
-            child: const Center(child: Icon(Icons.live_tv_rounded, color: MyTheme.darkBlue))
-          ),
-          const SizedBox(width: 10),
-          Text('mediaplex', style: MyTheme.appText(size: 25, isShadow: true, weight: FontWeight.w600)),
-          const SizedBox(width: 20),
-          Center(child: Container(width: 1.5, height: 40, color: MyTheme.whiteColor.withOpacity(0.5))),
-          const SizedBox(width: 10),
-          child,
-          const Spacer(),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: showSettings ? [
-              IconButton(
-                icon: const Icon(Icons.favorite, size: 25, color: MyTheme.logoLightColor),
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavScreen()))
-              ),
-              const SizedBox(width: 15),
-              IconButton(onPressed: () => {}, icon: const Icon(Icons.settings, size: 25, color: MyTheme.logoLightColor)),
-              const SizedBox(width: 15),
-              IconButton(
-                onPressed: () async => showDialog(context: context, builder: (BuildContext context) => _buildLogoutDialog(context)),
-                icon: const Icon(Icons.power_settings_new, size: 25, color: MyTheme.logoLightColor)
-              )
-            ] : [
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back_ios_new, size: 25, color: MyTheme.logoLightColor)
-              )
-            ]
-          )
-        ]
-      ),
-      flexibleSpace: Container(decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          stops: [0.0, 1.0],
-          tileMode: TileMode.clamp,
-          end: FractionalOffset(1.0, 0.0),
-          begin: FractionalOffset(0.0, 0.0),
-          colors: [MyTheme.darkBlue, MyTheme.slightBlue]
-        ))
-      )
-    );
-  }
+            // const SizedBox(width: 15),
+            // IconButton(onPressed: () => {}, icon: const Icon(Icons.settings, size: 25, color: MyTheme.logoLightColor)),
+            const SizedBox(width: 15),
+            IconButton(
+              onPressed: () async => showDialog(context: context, builder: (BuildContext context) => _buildLogoutDialog(context)),
+              icon: const Icon(Icons.power_settings_new, size: 25, color: MyTheme.logoLightColor)
+            )
+          ] : [
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back_ios_new, size: 25, color: MyTheme.logoLightColor)
+            )
+          ]
+        )
+      ]
+    ),
+    flexibleSpace: Container(decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        stops: [0, 1],
+        tileMode: TileMode.clamp,
+        end: FractionalOffset(1, 0),
+        begin: FractionalOffset(0, 0),
+        colors: [MyTheme.darkBlue, MyTheme.slightBlue]
+      ))
+    )
+  );
 
   static InputDecoration inputDecoration({
     String? hint,
@@ -134,7 +112,7 @@ class MyTheme {
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: const BorderRadius.all(Radius.circular(16)),
-      borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+      borderSide: BorderSide(color: Colors.grey.withOpacity(.2))
     )
   );
 
