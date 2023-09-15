@@ -10,28 +10,33 @@ class HomeService {
   ApiService apiService = ApiService();
 
   Future<List<ChannelModel>> fetchChannels(BuildContext context) async {
-    // var channels = await apiService.getAllData('api/channels.json');
     // var streams = await apiService.getAllData('api/streams.json');
-    var channels = await apiService.getAllData('static/channels.json', isDb: true);
+    // var channels = await apiService.getAllData('api/channels.json');
+    // var countries = await apiService.getAllData('api/countries.json');
     var streams = await apiService.getAllData('static/streams.json', isDb: true);
+    var channels = await apiService.getAllData('static/channels.json', isDb: true);
+    // var countries = await apiService.getAllData('static/countries.json', isDb: true);
 
-    if (channels.isLeft || streams.isLeft) {
+    if (streams.isLeft || channels.isLeft) {
       MyTheme.moveToErrorPage(context: context, text: channels.left.message! + streams.left.message!);
       return [];
     } else {
       // Merge channels and streams based on channel name
-      var response = channels.right.map((e) {
-        var stream = streams.right.firstWhere((element) => element['channel'] == e['id']);
-        e['url'] = stream['url'];
-        return e;
+      var response = channels.right.map((_) {
+        var stream = streams.right.firstWhere((s) => s['channel'] == _['id']);
+        // var country = countries.right.firstWhere((c) => c['code'] == _['country']);
+        _['url'] = stream['url'];
+        // _['country'] = {};
+        // _['country']['code'] = country['code'];
+        // _['country']['name'] = country['name'];
+        return _;
       });
 
       // print(response.first);
-
       return response.map((e) => ChannelModel.fromJson(e)).toList();
     }
+  }
 
-}
   Future<List<FavModel>> fetchFavChannels(BuildContext context) async {
     var response = await apiService.getAllData('fav/', isDb: true);
 

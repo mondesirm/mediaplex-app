@@ -3,25 +3,25 @@ import 'package:mediaplex/home/models/countries_model.dart';
 import 'package:mediaplex/home/models/languages_model.dart';
 
 class ChannelModel {
-  String? name;
-  String? logo;
   String? url;
-  List<Category>? categories;
+  String? logo;
+  String? name;
   List<Country>? countries;
   List<Language>? languages;
+  List<Category>? categories;
 
-  ChannelModel({this.name, this.logo, this.url, this.categories, this.countries, this.languages});
+  ChannelModel({this.url, this.logo, this.name, this.countries, this.languages, this.categories});
 
   ChannelModel.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    logo = json['logo'];
     url = json['url'];
+    logo = json['logo'];
+    name = json['name'];
+
     if (json['categories'] != null) {
       categories = <Category>[];
-      json['categories'].forEach((v) {
-        categories!.add(Category.fromString(v));
-      });
+      json['categories'].forEach((v) => categories!.add(Category.fromString(v)));
     }
+
     if (json['country'] != null) {
       countries = <Country>[];
       countries!.add(Country.fromString(json['country']));
@@ -29,9 +29,7 @@ class ChannelModel {
 
     if (json['languages'] != null) {
       languages = <Language>[];
-      json['languages'].forEach((v) {
-        languages!.add(Language.fromString(v));
-      });
+      json['languages'].forEach((v) => languages!.add(Language.fromString(v)));
     }
   }
 

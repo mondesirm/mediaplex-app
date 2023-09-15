@@ -22,17 +22,17 @@ class _SelectScreenState extends State<SelectScreen> {
   @override
   Widget build(BuildContext context) {
     // We use the number of unique countries in widget.models instead of countryIcons
-    var uniqueCountries = widget.models.map((e) => e.countries!.isNotEmpty ? e.countries![0].code!.toLowerCase() : 'international').toSet().toList();
+    var uniqueCountries = widget.models.map((e) => e.countries!.isNotEmpty ? e.countries![0].code!.toLowerCase() : '').toSet().toList();
 
     return Scaffold(
       appBar: MyTheme.appBar(context, child: widget.topWidget),
       body: Stack(children: [
         Container(decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: FractionalOffset(0, 0),
-            end: FractionalOffset(1, 0),
             stops: [0, 1],
             tileMode: TileMode.clamp,
+            end: FractionalOffset(1, 0),
+            begin: FractionalOffset(0, 0),
             colors: [MyTheme.darkBlue, MyTheme.slightBlue]
           ))
         ),
@@ -54,18 +54,19 @@ class _SelectScreenState extends State<SelectScreen> {
                     initialPage: _current,
                     viewportFraction: .2,
                     enlargeCenterPage: true,
+                    enableInfiniteScroll: false,
                     scrollPhysics: const BouncingScrollPhysics(),
                     onPageChanged: (index, reason) => setState(() => _current = index)
                   ),
                   itemBuilder: ((context, index, realIndex) {
-                    String country_name = 'International';
                     int total_channels = 0;
+                    String country_name = '';
 
                     List<ChannelModel> countryChannels = widget.models.where((e) {
                       return e.countries!.isNotEmpty ? e.countries![0].code!.toLowerCase() == uniqueCountries[index] : false;
                     }).toList();
 
-                    if (countryChannels.isNotEmpty && index == _current) {
+                    if (countryChannels.isNotEmpty) {
                       for (ChannelModel model in countryChannels) {
                         if (model.countries!.isNotEmpty) {
                           country_name = model.countries![0].name!;
@@ -78,29 +79,26 @@ class _SelectScreenState extends State<SelectScreen> {
 
                     return Column(children: [
                       GestureDetector(
-                        onTap: index == _current
-                          ? () => Navigator.push(context, MaterialPageRoute(builder: ((context) {
-                            return ChannelScreen(
-                              isLive: true,
-                              models: countryChannels,
-                              topWidget: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  widget.topWidget,
-                                  const SizedBox(width: 5),
-                                  Text(country_name, style: MyTheme.appText(size: 14, weight: FontWeight.w500, color: MyTheme.logoDarkColor))
-                                ]
-                              )
-                            );
-                          }))) : null,
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: ((context) => ChannelScreen(
+                          isLive: true,
+                          models: countryChannels,
+                          topWidget: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              widget.topWidget,
+                              const SizedBox(width: 5),
+                              Text(country_name, style: MyTheme.appText(size: 14, weight: FontWeight.w500, color: MyTheme.logoDarkColor))
+                            ]
+                          )
+                        )))),
                         child: Container(
                           width: 120,
                           height: 120,
                           decoration: index == _current ? BoxDecoration(
-                            borderRadius: BorderRadius.circular(70),
+                            shape: BoxShape.circle,
                             border: Border.all(width: 5, color: MyTheme.whiteColor)
                           ) : null,
-                          child: Image.asset('countries/${uniqueCountries[index]}.png', width: 120, height: 120, fit: BoxFit.fill)
+                          child: Image.asset('countries/${uniqueCountries[index]}.png', width: 120, height: 120, fit: BoxFit.contain)
                         )
                       ),
                       index == _current ? Column(children: [

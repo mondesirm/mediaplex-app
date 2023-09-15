@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -68,10 +69,10 @@ class _HomeState extends State<Home> {
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  stops: [0.0, 1.0],
+                  stops: [0, 1],
                   tileMode: TileMode.clamp,
-                  end: FractionalOffset(1.0, 0.0),
-                  begin: FractionalOffset(0.0, 0.0),
+                  end: FractionalOffset(1, 0),
+                  begin: FractionalOffset(0, 0),
                   colors: [MyTheme.darkBlue, MyTheme.slightBlue]
                 )
               )
@@ -81,11 +82,11 @@ class _HomeState extends State<Home> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Padding(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(10),
                     child: Align(
                       alignment: Alignment.bottomLeft,
                       child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.6,
+                        height: MediaQuery.of(context).size.height * .6,
                         child: AnimationLimiter(
                           child: ListView.builder(
                             shrinkWrap: true,
@@ -107,8 +108,8 @@ class _HomeState extends State<Home> {
                                 position: index,
                                 duration: const Duration(seconds: 1),
                                 child: SlideAnimation(
-                                  horizontalOffset: 80.0,
-                                  child: FadeInAnimation(
+                                  horizontalOffset: 80,
+                                  child: FadeInUp(
                                     child: GestureDetector(
                                       onTap: () {
                                         if (index == 0 || index == 1) {

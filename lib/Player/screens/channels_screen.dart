@@ -1,18 +1,18 @@
 // ignore_for_file: must_be_immutable, unused_element
 
+import 'package:lottie/lottie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:lottie/lottie.dart';
-import 'package:mediaplex/home/models/channel_model.dart';
-import 'package:mediaplex/Player/models/channel_card_model.dart';
-import 'package:mediaplex/Player/player.dart';
-import 'package:mediaplex/Player/service/player_service.dart';
-import 'package:mediaplex/Player/ui_view/channel_card.dart';
 
-import '../../utils/theme.dart';
+import 'package:mediaplex/utils/theme.dart';
+import 'package:mediaplex/Player/player.dart';
+import 'package:mediaplex/home/models/channel_model.dart';
+import 'package:mediaplex/Player/ui_view/channel_card.dart';
+import 'package:mediaplex/Player/service/player_service.dart';
+import 'package:mediaplex/Player/models/channel_card_model.dart';
 
 class ChannelScreen extends StatefulWidget {
-  ChannelScreen({super.key, required this.topWidget, required this.models, this.isLive = false});
+  ChannelScreen({super.key, this.isLive = false, required this.topWidget, required this.models});
 
   bool isLive;
   Widget topWidget;
@@ -32,10 +32,10 @@ class _ChannelScreenState extends State<ChannelScreen> {
       body: Stack(children: [
         Container(decoration: const BoxDecoration(
           gradient: LinearGradient(
-            stops: [0.0, 1.0],
+            stops: [0, 1],
             tileMode: TileMode.clamp,
-            end: FractionalOffset(1.0, 0.0),
-            begin: FractionalOffset(0.0, 0.0),
+            end: FractionalOffset(1, 0),
+            begin: FractionalOffset(0, 0),
             colors: [MyTheme.darkBlue, MyTheme.slightDarkBlue]
           ))
         ),
@@ -46,10 +46,10 @@ class _ChannelScreenState extends State<ChannelScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Lottie.asset('lottie/not_found.json', width: 180, height: 180),
-              Text('No channels found.', style: MyTheme.appText(size: 20, weight: FontWeight.w600, isShadow: true))
+              Text('No channels found.', style: MyTheme.appText(size: 20, isShadow: true  , weight: FontWeight.w600))
             ]
           )
-        ) : AnimationLimiter(
+        ) : Expanded(
           child: GridView.count(
             crossAxisCount: 4,
             mainAxisSpacing: 20,
@@ -59,11 +59,11 @@ class _ChannelScreenState extends State<ChannelScreen> {
             physics: const BouncingScrollPhysics(),
             key: const PageStorageKey<String>('GridView'),
             children: List.generate(widget.models.length, (index) => AnimationConfiguration.staggeredGrid(
-              columnCount: 4,
               position: index,
               duration: const Duration(seconds: 1, milliseconds: 500),
+              columnCount: MediaQuery.of(context).size.width > 1000 ? 4 : 2,
               child: SlideAnimation(
-                horizontalOffset: 80.0,
+                horizontalOffset: 80,
                 child: FadeInAnimation(
                   child: ChannelCard(
                     onFav: () => showDialog(

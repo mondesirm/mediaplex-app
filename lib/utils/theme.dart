@@ -43,10 +43,10 @@ class MyTheme {
       crossAxisAlignment: CrossAxisAlignment.center,
       textBaseline: TextBaseline.ideographic,
       children: [
-        SvgPicture.asset('logo.svg', height: 20),
-        const SizedBox(width: 20),
-        Center(child: Container(width: 1.5, height: 40, color: MyTheme.whiteColor.withOpacity(.5))),
-        const SizedBox(width: 20),
+        if (MediaQuery.of(context).size.width > 400) SvgPicture.asset('logo.svg', height: 20),
+        if (MediaQuery.of(context).size.width > 400) const SizedBox(width: 20),
+        if (MediaQuery.of(context).size.width > 400) Center(child: Container(width: 1.5, height: 40, color: MyTheme.whiteColor.withOpacity(.5))),
+        if (MediaQuery.of(context).size.width > 400) const SizedBox(width: 20),
         child,
         const Spacer(),
         Row(
