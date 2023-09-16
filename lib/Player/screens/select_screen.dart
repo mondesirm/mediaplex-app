@@ -4,7 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/home/models/channel_model.dart';
-import 'package:mediaplex/Player/screens/channels_screen.dart';
+import 'package:mediaplex/Player/screens/channel_screen.dart';
 
 class SelectScreen extends StatefulWidget {
   SelectScreen({super.key, required this.topWidget, required this.models});
@@ -27,15 +27,13 @@ class _SelectScreenState extends State<SelectScreen> {
     return Scaffold(
       appBar: MyTheme.appBar(context, child: widget.topWidget),
       body: Stack(children: [
-        Container(decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            stops: [0, 1],
-            tileMode: TileMode.clamp,
-            end: FractionalOffset(1, 0),
-            begin: FractionalOffset(0, 0),
-            colors: [MyTheme.darkBlue, MyTheme.slightBlue]
-          ))
-        ),
+        Container(decoration: const BoxDecoration(gradient: LinearGradient(
+          stops: [0, 1],
+          tileMode: TileMode.clamp,
+          end: FractionalOffset(1, 0),
+          begin: FractionalOffset(0, 0),
+          colors: [MyTheme.darkBlue, MyTheme.slightBlue]
+        ))),
         Align(
           alignment: Alignment.center,
           child: Column(

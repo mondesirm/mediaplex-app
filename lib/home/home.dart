@@ -14,7 +14,7 @@ import 'package:mediaplex/home/ui_view/show_card.dart';
 import 'package:mediaplex/home/models/channel_model.dart';
 import 'package:mediaplex/home/service/home_service.dart';
 import 'package:mediaplex/Player/screens/select_screen.dart';
-import 'package:mediaplex/Player/screens/channels_screen.dart';
+import 'package:mediaplex/Player/screens/channel_screen.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

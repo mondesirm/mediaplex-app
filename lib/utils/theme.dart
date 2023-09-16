@@ -8,7 +8,9 @@ import 'package:mediaplex/login/login.dart';
 import 'package:mediaplex/home/screens/fav_screen.dart';
 
 class MyTheme {
+  static const Color primary = Color(0xff5938eb);
   static const Color darkBlue = Color(0xff1A1726);
+  static const Color secondary = Color(0xff78cda1);
   static const Color slightBlue = Color(0xff242230);
   static const Color whiteColor = Color(0xFFFFFFFF);
   static const Color logoDarkColor = Color(0xff9744F6);
@@ -53,18 +55,21 @@ class MyTheme {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: showSettings ? [
             IconButton(
-              icon: const Icon(Icons.favorite, size: 25, color: MyTheme.logoLightColor),
+              splashRadius: 25,
+              icon: const Icon(Icons.favorite, size: 25, color: Colors.red),
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavScreen()))
             ),
             // const SizedBox(width: 15),
-            // IconButton(onPressed: () => {}, icon: const Icon(Icons.settings, size: 25, color: MyTheme.logoLightColor)),
+            // IconButton(splashRadius: 25, onPressed: () => {}, icon: const Icon(Icons.settings, size: 25, color: MyTheme.logoLightColor)),
             const SizedBox(width: 15),
             IconButton(
+              splashRadius: 25,
               onPressed: () async => showDialog(context: context, builder: (BuildContext context) => _buildLogoutDialog(context)),
               icon: const Icon(Icons.power_settings_new, size: 25, color: MyTheme.logoLightColor)
             )
           ] : [
             IconButton(
+              splashRadius: 25,
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.arrow_back_ios_new, size: 25, color: MyTheme.logoLightColor)
             )

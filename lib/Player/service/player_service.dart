@@ -10,6 +10,6 @@ class PlayerService {
     var response = await _service.postHeaderData('fav/add', model.toJson(), isDb: true);
 
     if (response.isLeft) return '${model.toJson()["channel_name"]} is already in your favorites.';
-    return '${model.toJson()["channel_name"]} was added to favorites.';
+    return '${model.toJson()["channel_name"]} was added to your favorites.';
   }
 }
