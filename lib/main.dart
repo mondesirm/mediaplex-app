@@ -1,8 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:mediaplex/home/home.dart';
-import 'package:mediaplex/login/login.dart';
+
+import 'home/home.dart';
+import 'login/login.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,16 +23,8 @@ class _MyAppState extends State<MyApp> {
 
   void switchHome() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String? session = sharedPreferences.getString("session");
-    if (session == null) {
-      setState(() {
-        home = Login();
-      });
-    } else {
-      setState(() {
-        home = Home();
-      });
-    }
+    String? session = sharedPreferences.getString('session');
+    setState(() => home = session == null ? Login() : Home());
   }
 
   @override
@@ -43,9 +36,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'mediaplex',
-      debugShowCheckedModeBanner: false,
       home: home,
+      title: 'mediaplex',
+      debugShowCheckedModeBanner: false
     );
   }
 }
