@@ -8,7 +8,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/home/models/fav_model.dart';
-import 'package:mediaplex/home/ui_view/fav_card.dart';
+import 'package:mediaplex/home/widgets/fav_card.dart';
 import 'package:mediaplex/home/service/home_service.dart';
 
 class FavScreen extends StatefulWidget {
@@ -19,26 +19,22 @@ class FavScreen extends StatefulWidget {
 }
 
 class _FavScreenState extends State<FavScreen> {
+  List<FavModel> models = [];
   HomeService service = HomeService();
   late Future<List<FavModel>> _channels;
-  List<FavModel> models = [];
 
   @override
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
-    const orientations = [
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight
-    ];
-    SystemChrome.setPreferredOrientations(orientations);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
     _channels = service.fetchFavChannels(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyTheme.appBar(context, child: Text('My Favorites', style: MyTheme.appText(size: 18, weight: FontWeight.w600))),
+      appBar: MyTheme.appBar(context, screen: 'FavScreen', child: Text('My Favorites', style: MyTheme.appText(size: 18, weight: FontWeight.w600))),
       body: Stack(
         children: [
           Container(decoration: const BoxDecoration(gradient: LinearGradient(

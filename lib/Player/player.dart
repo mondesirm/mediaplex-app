@@ -37,7 +37,7 @@ class Player extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async { Navigator.pop(context); return false; },
       child: Scaffold(
-        appBar: MyTheme.appBar(context, child: Text('Playing $fileName', style: MyTheme.appText(size: 18, weight: FontWeight.w600))),
+        appBar: MyTheme.appBar(context, screen: 'Player', child: Text('Playing $fileName', style: MyTheme.appText(size: 18, weight: FontWeight.w600))),
         body: Stack(children: [
           Container(decoration: const BoxDecoration(gradient: LinearGradient(
             stops: [0, 1],

@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'package:mediaplex/utils/theme.dart';
-import 'package:mediaplex/Player/player.dart';
+import 'package:mediaplex/player/player.dart';
 import 'package:mediaplex/home/models/channel_model.dart';
-import 'package:mediaplex/Player/ui_view/channel_card.dart';
-import 'package:mediaplex/Player/service/player_service.dart';
-import 'package:mediaplex/Player/models/channel_card_model.dart';
+import 'package:mediaplex/player/widgets/channel_card.dart';
+import 'package:mediaplex/player/service/player_service.dart';
+import 'package:mediaplex/player/models/channel_card_model.dart';
 
 class ChannelScreen extends StatefulWidget {
   const ChannelScreen({super.key, this.isLive = false, required this.topWidget, required this.models});
@@ -26,7 +26,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyTheme.appBar(context, child: widget.topWidget),
+      appBar: MyTheme.appBar(context, screen: 'ChannelScreen', child: widget.topWidget),
       body: Stack(children: [
         Container(decoration: const BoxDecoration(gradient: LinearGradient(
           stops: [0, 1],

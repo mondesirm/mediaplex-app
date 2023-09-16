@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'package:mediaplex/utils/theme.dart';
-import 'package:mediaplex/Player/models/channel_card_model.dart';
+import 'package:mediaplex/player/models/channel_card_model.dart';
 
 class AnimatedChannelCard extends ChannelCard {
   const AnimatedChannelCard({

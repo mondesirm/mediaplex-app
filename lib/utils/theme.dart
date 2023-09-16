@@ -36,7 +36,7 @@ class MyTheme {
       : null
   );
 
-  static AppBar appBar(BuildContext context, {Widget child = const SizedBox(), bool showSettings = false}) => AppBar(
+  static AppBar appBar(BuildContext context, {Widget child = const SizedBox(), String screen = ''}) => AppBar(
     elevation: 0,
     automaticallyImplyLeading: false,
     backgroundColor: Colors.transparent,
@@ -53,25 +53,29 @@ class MyTheme {
         const Spacer(),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: showSettings ? [
-            IconButton(
+          children: [
+            if (screen.isNotEmpty) IconButton(
+              splashRadius: 25,
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back_ios_new, size: 25, color: MyTheme.logoLightColor)
+            ),
+            if (screen.isNotEmpty) const SizedBox(width: 15),
+            if (screen != 'FavScreen') IconButton(
               splashRadius: 25,
               icon: const Icon(Icons.favorite, size: 25, color: Colors.red),
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavScreen()))
             ),
-            // const SizedBox(width: 15),
-            // IconButton(splashRadius: 25, onPressed: () => {}, icon: const Icon(Icons.settings, size: 25, color: MyTheme.logoLightColor)),
-            const SizedBox(width: 15),
+            if (screen != 'FavScreen') const SizedBox(width: 15),
+            if (screen != 'SettingsScreen') IconButton(
+              splashRadius: 25,
+              icon: const Icon(Icons.settings, size: 25, color: MyTheme.logoLightColor),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavScreen()))
+            ),
+            if (screen != 'SettingsScreen') const SizedBox(width: 15),
             IconButton(
               splashRadius: 25,
               onPressed: () async => showDialog(context: context, builder: (BuildContext context) => _buildLogoutDialog(context)),
               icon: const Icon(Icons.power_settings_new, size: 25, color: MyTheme.logoLightColor)
-            )
-          ] : [
-            IconButton(
-              splashRadius: 25,
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back_ios_new, size: 25, color: MyTheme.logoLightColor)
             )
           ]
         )

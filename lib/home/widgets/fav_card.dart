@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:mediaplex/utils/theme.dart';
-import 'package:mediaplex/Player/player.dart';
+import 'package:mediaplex/player/player.dart';
 import 'package:mediaplex/home/models/fav_model.dart';
 
 class FavCard extends StatefulWidget {

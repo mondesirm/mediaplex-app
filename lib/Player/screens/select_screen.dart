@@ -4,7 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/home/models/channel_model.dart';
-import 'package:mediaplex/Player/screens/channel_screen.dart';
+import 'package:mediaplex/player/screens/channel_screen.dart';
 
 class SelectScreen extends StatefulWidget {
   SelectScreen({super.key, required this.topWidget, required this.models});
@@ -25,7 +25,7 @@ class _SelectScreenState extends State<SelectScreen> {
     var uniqueCountries = widget.models.map((e) => e.countries!.isNotEmpty ? e.countries![0].code!.toLowerCase() : '').toSet().toList();
 
     return Scaffold(
-      appBar: MyTheme.appBar(context, child: widget.topWidget),
+      appBar: MyTheme.appBar(context, screen: 'SelectScreen', child: widget.topWidget),
       body: Stack(children: [
         Container(decoration: const BoxDecoration(gradient: LinearGradient(
           stops: [0, 1],
@@ -116,7 +116,7 @@ class _SelectScreenState extends State<SelectScreen> {
                             ),
                             Text(
                               '$total_channels channel${total_channels > 1 ? 's' : ''}',
-                              style: MyTheme.appText(size: 15, weight: FontWeight.w500)
+                              style: MyTheme.appText(size: 15, weight: FontWeight.w500, color: Colors.white54)
                             )
                           ]
                         )
