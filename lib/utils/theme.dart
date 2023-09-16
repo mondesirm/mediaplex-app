@@ -17,7 +17,7 @@ class MyTheme {
   static const Color logoLightColor = Color(0xffB16FF7);
   static const Color slightDarkBlue = Color(0xff232031);
 
-  static const String dbURL = 'http://127.0.0.1:8000/'; // 'https://web-7-ush.cloud.okteto.net/';
+  static const String dbURL = 'http://127.0.0.1:8000/';
   static const String iptvURl = 'https://iptv-org.github.io/';
 
   static TextStyle appText({

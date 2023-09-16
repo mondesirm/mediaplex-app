@@ -1,5 +1,3 @@
-// ignore_for_file: must_be_immutable, prefer_const_constructors, sized_box_for_whitespace
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -72,42 +70,33 @@ class _ChannelCardState extends State<ChannelCard> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(30),
             border: Border.all(width: 1.5, color: Colors.white.withOpacity(0.2)),
-            boxShadow: [BoxShadow(blurRadius: 7, spreadRadius: 5, offset: Offset(0, 3), color: Colors.white.withOpacity(0.1))]
+            boxShadow: [BoxShadow(blurRadius: 7, spreadRadius: 5, offset: const Offset(0, 3), color: Colors.white.withOpacity(0.1))]
           ),
           child: Padding(
-            padding: EdgeInsets.all(24),
-            child: Stack(
-              children: [
-                Center(child: ClipRRect(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.model.image_url,
-                    errorWidget: (context, url, error) => Icon(Icons.error, size: 50, color: Colors.white),
-                    placeholder: (context, url) => LoadingAnimationWidget.fourRotatingDots(size: 20, color: MyTheme.whiteColor),
-                    imageBuilder: (context, image) => Container(decoration: BoxDecoration(image: DecorationImage(fit: BoxFit.contain, image: image)))
-                  )
-                ))
-                // Text(widget.model.channel_name, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 24, color: MyTheme.darkBlue, fontWeight: FontWeight.bold))
-              ]
+            padding: const EdgeInsets.all(24),
+            child: Stack(children: [
+              Center(child: ClipRRect(
+                borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+                child: CachedNetworkImage(
+                  imageUrl: widget.model.image_url,
+                  errorWidget: (context, url, error) => const Icon(Icons.error, size: 50, color: Colors.white),
+                  placeholder: (context, url) => LoadingAnimationWidget.fourRotatingDots(size: 20, color: MyTheme.whiteColor),
+                  imageBuilder: (context, image) => Container(decoration: BoxDecoration(image: DecorationImage(fit: BoxFit.contain, image: image)))
+                )
+              ))]
             )
           )
-        ),
+        )
       ),
-      // Layout with width that fills parent
-
       Container(
-        // Max width
-        // width: 200,
         height: 45,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            stops: const [0, 1],
-            tileMode: TileMode.clamp,
-            end: const FractionalOffset(1, 0),
-            begin: const FractionalOffset(0, 0),
-            colors: [MyTheme.logoDarkColor, MyTheme.logoDarkColor.withOpacity(.4)]
-          )
-        ),
+        decoration: BoxDecoration(gradient: LinearGradient(
+          stops: const [0, 1],
+          tileMode: TileMode.clamp,
+          end: const FractionalOffset(1, 0),
+          begin: const FractionalOffset(0, 0),
+          colors: [MyTheme.logoDarkColor, MyTheme.logoDarkColor.withOpacity(.4)]
+        )),
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -122,7 +111,7 @@ class _ChannelCardState extends State<ChannelCard> {
                 )
               ]
             ),
-            Align(alignment: Alignment.topRight, child: IconButton(onPressed: widget.onFav, icon: Icon(Icons.favorite_border, color: Colors.red)))
+            Align(alignment: Alignment.topRight, child: IconButton(onPressed: widget.onFav, icon: const Icon(Icons.favorite_border, color: Colors.red)))
           ]
         )
       )
