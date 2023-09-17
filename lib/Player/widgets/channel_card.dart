@@ -80,7 +80,7 @@ class _ChannelCardState extends State<ChannelCard> {
                 child: CachedNetworkImage(
                   imageUrl: widget.model.image_url,
                   errorWidget: (context, url, error) => const Icon(Icons.error, size: 50, color: Colors.white),
-                  placeholder: (context, url) => LoadingAnimationWidget.fourRotatingDots(size: 20, color: MyTheme.whiteColor),
+                  placeholder: (context, url) => LoadingAnimationWidget.fourRotatingDots(size: 20, color: MyTheme.white),
                   imageBuilder: (context, image) => Container(decoration: BoxDecoration(image: DecorationImage(fit: BoxFit.contain, image: image)))
                 )
               ))]
@@ -95,7 +95,7 @@ class _ChannelCardState extends State<ChannelCard> {
           tileMode: TileMode.clamp,
           end: const FractionalOffset(1, 0),
           begin: const FractionalOffset(0, 0),
-          colors: [MyTheme.logoDarkColor, MyTheme.logoDarkColor.withOpacity(.4)]
+          colors: [MyTheme.logoDark, MyTheme.logoDark.withOpacity(.4)]
         )),
         child: Stack(
           alignment: Alignment.center,
@@ -103,11 +103,11 @@ class _ChannelCardState extends State<ChannelCard> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(widget.model.channel_name, overflow: TextOverflow.ellipsis, style: MyTheme.appText(size: 15, color: MyTheme.darkBlue, weight: FontWeight.w600)),
+                Text(widget.model.channel_name, overflow: TextOverflow.ellipsis, style: MyTheme.appText(color: MyTheme.background)),
                 Text(
                   overflow: TextOverflow.ellipsis,
                   widget.isLive ? widget.model.channel_category : widget.model.languages,
-                  style: MyTheme.appText(size: 12, weight: FontWeight.w500, color: MyTheme.darkBlue)
+                  style: MyTheme.appText(size: 12, weight: FontWeight.w500, color: MyTheme.background)
                 )
               ]
             ),

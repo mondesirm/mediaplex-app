@@ -4,8 +4,8 @@ import 'package:lottie/lottie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:mediaplex/Login/login.dart';
 import 'package:mediaplex/utils/theme.dart';
+import 'package:mediaplex/auth/login_screen.dart';
 
 class ErrorPage extends StatefulWidget {
   ErrorPage({super.key, required this.text});
@@ -29,7 +29,7 @@ class _ErrorPageState extends State<ErrorPage> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        backgroundColor: MyTheme.darkBlue,
+        backgroundColor: MyTheme.darkBg,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -55,13 +55,13 @@ class _ErrorPageState extends State<ErrorPage> {
                     end: Alignment.topRight,
                     tileMode: TileMode.clamp,
                     begin: Alignment.bottomLeft,
-                    colors: [MyTheme.logoDarkColor, MyTheme.logoLightColor.withOpacity(0.7)]
+                    colors: [MyTheme.logoDark, MyTheme.logoLight.withOpacity(0.7)]
                   )
                 ),
                 child: ElevatedButton(
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Login())),
+                  onPressed: () => MyTheme.goTo(context, widget: const LoginScreen()),
                   style: MyTheme.buttonStyle(backColor: Colors.transparent, borderColor: Colors.transparent),
-                  child: Text('Go Back', style: MyTheme.appText(size: 16, weight: FontWeight.w600, color: MyTheme.whiteColor))
+                  child: Text('Go Back', style: MyTheme.appText(size: 16))
                 )
               )
             ]

@@ -1,11 +1,10 @@
-// ignore_for_file: unused_field
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+// import 'package:animate_do/animate_do.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+
 import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/home/models/fav_model.dart';
 import 'package:mediaplex/home/widgets/fav_card.dart';
@@ -19,9 +18,9 @@ class FavScreen extends StatefulWidget {
 }
 
 class _FavScreenState extends State<FavScreen> {
-  List<FavModel> models = [];
+  List<Fav> models = [];
   HomeService service = HomeService();
-  late Future<List<FavModel>> _channels;
+  late Future<List<Fav>> _channels;
 
   @override
   void initState() {
@@ -34,17 +33,11 @@ class _FavScreenState extends State<FavScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyTheme.appBar(context, screen: 'FavScreen', child: Text('My Favorites', style: MyTheme.appText(size: 18, weight: FontWeight.w600))),
+      appBar: MyTheme.appBar(context, screen: 'FavScreen', child: Expanded(child: Text('My Favorites', overflow: TextOverflow.ellipsis, style: MyTheme.appText(size: 18)))),
       body: Stack(
         children: [
-          Container(decoration: const BoxDecoration(gradient: LinearGradient(
-            stops: [0, 1],
-            tileMode: TileMode.clamp,
-            end: FractionalOffset(1, 0),
-            begin: FractionalOffset(0, 0),
-            colors: [MyTheme.darkBlue, MyTheme.slightBlue]
-          ))),
-          FutureBuilder<List<FavModel>>(
+          Container(decoration: MyTheme.boxDecoration()),
+          FutureBuilder<List<Fav>>(
             future: _channels,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -83,7 +76,7 @@ class _FavScreenState extends State<FavScreen> {
                         )
                       )
                     );
-              } else { return Center(child: LoadingAnimationWidget.fourRotatingDots(size: 30, color: MyTheme.logoLightColor)); }
+              } else { return Center(child: LoadingAnimationWidget.fourRotatingDots(size: 30, color: MyTheme.logoLight)); }
             }
           )
         ]
@@ -91,8 +84,8 @@ class _FavScreenState extends State<FavScreen> {
     );
   }
 
-  Widget _buildPopupDialog(BuildContext context, {required FavModel model}) => AlertDialog(
-    backgroundColor: MyTheme.slightDarkBlue,
+  Widget _buildPopupDialog(BuildContext context, {required Fav model}) => AlertDialog(
+    backgroundColor: MyTheme.surface,
     actionsAlignment: MainAxisAlignment.spaceBetween,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     actionsPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
@@ -100,17 +93,17 @@ class _FavScreenState extends State<FavScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('Do you want to remove this channel \nfrom your favorites?', style: MyTheme.appText(size: 15, weight: FontWeight.w500, color: MyTheme.whiteColor))
+        Text('Do you want to remove this channel \nfrom your favorites?', style: MyTheme.appText(weight: FontWeight.w500))
       ]
     ),
     actions: <Widget>[
       SizedBox(
         width: 100,
         child: ElevatedButton(
-          style: MyTheme.buttonStyle(backColor: MyTheme.logoLightColor),
+          style: MyTheme.buttonStyle(backColor: MyTheme.logoLight),
           onPressed: () {
             service.deleteFavChannel(context: context, model: model).then((value) {
-              final snackBar = SnackBar(backgroundColor: (MyTheme.slightBlue), content: Text(value, style: MyTheme.appText(size: 12, weight: FontWeight.w500)));
+              final snackBar = SnackBar(backgroundColor: (MyTheme.lightBg), content: Text(value, style: MyTheme.appText(size: 12, weight: FontWeight.w500)));
 
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
               setState(() => models.remove(model));
@@ -122,7 +115,7 @@ class _FavScreenState extends State<FavScreen> {
       ),
       SizedBox(
         width: 100,
-        child: ElevatedButton(style: MyTheme.buttonStyle(backColor: MyTheme.logoLightColor), onPressed: () => Navigator.of(context).pop(), child: const Text('No'))
+        child: ElevatedButton(style: MyTheme.buttonStyle(backColor: MyTheme.logoLight), onPressed: () => Navigator.of(context).pop(), child: const Text('No'))
       )
     ]
   );

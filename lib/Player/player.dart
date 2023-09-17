@@ -21,7 +21,7 @@ class Player extends StatelessWidget {
   //     showControlsOnInitialize: true,
   //     backgroundColor: Colors.transparent,
   //     overflowModalColor: Colors.transparent,
-  //     loadingWidget: Center(child: LoadingAnimationWidget.fourRotatingDots(color: MyTheme.logoLightColor, size: 30))
+  //     loadingWidget: Center(child: LoadingAnimationWidget.fourRotatingDots(color: MyTheme.logoLight, size: 30))
   //   )
   // );
 
@@ -37,14 +37,14 @@ class Player extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async { Navigator.pop(context); return false; },
       child: Scaffold(
-        appBar: MyTheme.appBar(context, screen: 'Player', child: Text('Playing $fileName', style: MyTheme.appText(size: 18, weight: FontWeight.w600))),
+        appBar: MyTheme.appBar(context, screen: 'Player', child: Text('Playing $fileName', style: MyTheme.appText(size: 18))),
         body: Stack(children: [
           Container(decoration: const BoxDecoration(gradient: LinearGradient(
             stops: [0, 1],
             tileMode: TileMode.clamp,
             end: FractionalOffset(1, 0),
             begin: FractionalOffset(0, 0),
-            colors: [MyTheme.darkBlue, MyTheme.slightDarkBlue]
+            colors: [MyTheme.background, MyTheme.surface]
           ))),
           Chewie(controller: ChewieController(
             looping: true,

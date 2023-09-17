@@ -1,21 +1,19 @@
-class FavModel {
+class Fav {
   String? streamLink;
   String? category;
   String? channelName;
 
-  FavModel({this.streamLink, this.category, this.channelName});
+  Fav({this.streamLink, this.category, this.channelName});
 
-  FavModel.fromJson(Map<String, dynamic> json) {
+  Fav.fromJson(Map<String, dynamic> json) {
     streamLink = json['stream_link'];
     category = json['category'];
     channelName = json['channel_name'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['stream_link'] = streamLink;
-    data['category'] = category;
-    data['channel_name'] = channelName;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    'stream_link': streamLink,
+    'category': category,
+    'channel_name': channelName
+  };
 }

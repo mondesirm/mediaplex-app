@@ -8,7 +8,7 @@ import 'package:mediaplex/home/models/fav_model.dart';
 
 class FavCard extends StatefulWidget {
   FavCard({super.key, required this.model, required this.index,required this.onTap});
-  FavModel model;
+  Fav model;
   int index;
   VoidCallback onTap;
 
@@ -25,12 +25,12 @@ class _FavCardState extends State<FavCard> {
       decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                offset: const Offset(0.3, 0.1),
+                color: Colors.black.withOpacity(.2),
+                offset: const Offset(.3, .1),
                 spreadRadius: 2,
                 blurRadius: 1)
           ],
-          color: MyTheme.slightDarkBlue,
+          color: MyTheme.surface,
           borderRadius: BorderRadius.circular(10)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -41,10 +41,7 @@ class _FavCardState extends State<FavCard> {
             children: [
               Text(
                 widget.index.toString(),
-                style: MyTheme.appText(
-                    size: 40,
-                    weight: FontWeight.bold,
-                    color: MyTheme.logoDarkColor),
+                style: MyTheme.appText(size: 40, weight: FontWeight.bold, color: MyTheme.logoDark)
               ),
               const SizedBox(
                 width: 15,
@@ -53,7 +50,7 @@ class _FavCardState extends State<FavCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.5,
+                    width: MediaQuery.of(context).size.width * .5,
                     child: Text(
                       widget.model.channelName!,
                       overflow: TextOverflow.ellipsis,
@@ -65,12 +62,11 @@ class _FavCardState extends State<FavCard> {
                     widget.model.category!,
                     style: MyTheme.appText(
                         size: 14,
-                        weight: FontWeight.w600,
-                        color: MyTheme.whiteColor.withOpacity(0.5)),
-                  ),
-                ],
-              ),
-            ],
+                        color: Colors.white.withOpacity(.5))
+                  )
+                ]
+              )
+            ]
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -85,7 +81,7 @@ class _FavCardState extends State<FavCard> {
                     }));
                   },
                   style: MyTheme.buttonStyle(
-                      backColor: MyTheme.logoLightColor, fontSize: 13),
+                      backColor: MyTheme.logoLight, fontSize: 13),
                   child: const Text("Watch"),
                 ),
               ),

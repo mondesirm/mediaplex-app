@@ -32,7 +32,7 @@ class _SelectScreenState extends State<SelectScreen> {
           tileMode: TileMode.clamp,
           end: FractionalOffset(1, 0),
           begin: FractionalOffset(0, 0),
-          colors: [MyTheme.darkBlue, MyTheme.slightBlue]
+          colors: [MyTheme.background, MyTheme.slightBlue]
         ))),
         Align(
           alignment: Alignment.center,
@@ -85,7 +85,7 @@ class _SelectScreenState extends State<SelectScreen> {
                             children: [
                               widget.topWidget,
                               const SizedBox(width: 5),
-                              Text(country_name, style: MyTheme.appText(size: 14, weight: FontWeight.w500, color: MyTheme.logoDarkColor))
+                              Text(country_name, style: MyTheme.appText(size: 14, weight: FontWeight.w500, color: MyTheme.logoDark))
                             ]
                           )
                         )))),
@@ -94,7 +94,7 @@ class _SelectScreenState extends State<SelectScreen> {
                           height: 120,
                           decoration: index == _current ? BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(width: 5, color: MyTheme.whiteColor)
+                            border: Border.all(width: 5, color: MyTheme.white)
                           ) : null,
                           child: Image.asset('countries/${uniqueCountries[index]}.png', width: 120, height: 120, fit: BoxFit.contain)
                         )
@@ -111,12 +111,12 @@ class _SelectScreenState extends State<SelectScreen> {
                                 country_name,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
-                                style: MyTheme.appText(size: 20, weight: FontWeight.w600)
+                                style: MyTheme.appText(size: 20)
                               )
                             ),
                             Text(
                               '$total_channels channel${total_channels > 1 ? 's' : ''}',
-                              style: MyTheme.appText(size: 15, weight: FontWeight.w500, color: Colors.white54)
+                              style: MyTheme.appText(weight: FontWeight.w500, color: Colors.white54)
                             )
                           ]
                         )
@@ -128,7 +128,7 @@ class _SelectScreenState extends State<SelectScreen> {
               const SizedBox(height: 10),
               ElevatedButton(
                 onLongPress: () => buttonCarouselController.animateToPage(_current + 20),
-                style: ElevatedButton.styleFrom(backgroundColor: MyTheme.logoLightColor),
+                style: ElevatedButton.styleFrom(backgroundColor: MyTheme.logoLight),
                 onPressed: () => buttonCarouselController.nextPage(curve: Curves.linear, duration: const Duration(milliseconds: 100)),
                 child: const Icon(Icons.arrow_forward, size: 24)
               )
@@ -140,17 +140,17 @@ class _SelectScreenState extends State<SelectScreen> {
           child: Container(
             padding: const EdgeInsets.all(10),
             margin: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: MyTheme.darkBlue, borderRadius: BorderRadius.circular(15)),
+            decoration: BoxDecoration(color: MyTheme.background, borderRadius: BorderRadius.circular(15)),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               textBaseline: TextBaseline.alphabetic,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(Icons.tv, color: MyTheme.whiteColor),
+                const Icon(Icons.tv, color: MyTheme.white),
                 const SizedBox(width: 8),
-                Text('All', style: MyTheme.appText(size: 15, weight: FontWeight.w600)),
+                Text('All', style: MyTheme.appText()),
                 const SizedBox(width: 20),
-                Text(widget.models.length.toString(), style: MyTheme.appText(size: 15, weight: FontWeight.w600))
+                Text(widget.models.length.toString(), style: MyTheme.appText())
               ]
             )
           )

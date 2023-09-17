@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'home/home.dart';
-import 'login/login.dart';
+import 'home/home_screen.dart';
+import 'auth/login_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,21 +24,12 @@ class _MyAppState extends State<MyApp> {
   void switchHome() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? session = sharedPreferences.getString('session');
-    setState(() => home = session == null ? Login() : Home());
+    setState(() => home = session == null ? LoginScreen() : HomeScreen());
   }
 
   @override
-  void initState() {
-    switchHome();
-    super.initState();
-  }
+  void initState() { switchHome(); super.initState(); }
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: home,
-      title: 'mediaplex',
-      debugShowCheckedModeBanner: false
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(home: home, title: 'mediaplex', debugShowCheckedModeBanner: false);
 }

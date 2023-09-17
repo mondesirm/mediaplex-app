@@ -28,13 +28,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
     return Scaffold(
       appBar: MyTheme.appBar(context, screen: 'ChannelScreen', child: widget.topWidget),
       body: Stack(children: [
-        Container(decoration: const BoxDecoration(gradient: LinearGradient(
-          stops: [0, 1],
-          tileMode: TileMode.clamp,
-          end: FractionalOffset(1, 0),
-          begin: FractionalOffset(0, 0),
-          colors: [MyTheme.darkBlue, MyTheme.slightDarkBlue]
-        ))),
+        Container(decoration: MyTheme.boxDecoration()),
         widget.models.isEmpty ? Align(
           alignment: Alignment.center,
           child: Column(
@@ -42,7 +36,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Lottie.asset('lottie/not_found.json', width: 180, height: 180),
-              Text('No channels found.', style: MyTheme.appText(size: 20, isShadow: true  , weight: FontWeight.w600))
+              Text('No channels found.', style: MyTheme.appText(size: 20))
             ]
           )
         ) : Padding(
@@ -84,7 +78,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
   }
 
   Widget _buildPopupDialog(BuildContext context, {required ChannelModel model}) => AlertDialog(
-    backgroundColor: MyTheme.slightDarkBlue,
+    backgroundColor: MyTheme.surface,
     actionsAlignment: MainAxisAlignment.spaceBetween,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     actionsPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
@@ -94,7 +88,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
       children: [
         Text(
           'Do you want to add this channel to your favorites?',
-          style: MyTheme.appText(size: 15, weight: FontWeight.w500, color: MyTheme.whiteColor)
+          style: MyTheme.appText(weight: FontWeight.w500)
         )
       ]
     ),
@@ -102,14 +96,10 @@ class _ChannelScreenState extends State<ChannelScreen> {
       SizedBox(
         width: 100,
         child: ElevatedButton(
-          style: MyTheme.buttonStyle(backColor: MyTheme.logoLightColor),
+          style: MyTheme.buttonStyle(backColor: MyTheme.logoLight),
           onPressed: () {
             service.addToFav(context: context, model: model).then((value) {
-              final snackBar = SnackBar(
-                backgroundColor: (MyTheme.slightBlue),
-                content: Text(value, style: MyTheme.appText(size: 12, weight: FontWeight.w500))
-              );
-
+              final snackBar = SnackBar(backgroundColor: MyTheme.lightBg, content: Text(value, style: MyTheme.appText(size: 12, weight: FontWeight.w500)));
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
               Navigator.of(context).pop();
             });
@@ -121,7 +111,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
         width: 100,
         child: ElevatedButton(
           onPressed: () => Navigator.of(context).pop(),
-          style: MyTheme.buttonStyle(backColor: MyTheme.logoLightColor),
+          style: MyTheme.buttonStyle(backColor: MyTheme.logoLight),
           child: const Text('No')
         )
       )

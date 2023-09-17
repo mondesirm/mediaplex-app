@@ -18,7 +18,7 @@ class HomeService {
     // var countries = await apiService.getAllData('static/countries.json', isDb: true);
 
     if (streams.isLeft || channels.isLeft) {
-      MyTheme.moveToErrorPage(context: context, text: channels.left.message! + streams.left.message!);
+      MyTheme.showError(context: context, text: channels.left.message! + streams.left.message!);
       return [];
     } else {
       // Merge channels and streams based on channel name
@@ -37,16 +37,16 @@ class HomeService {
     }
   }
 
-  Future<List<FavModel>> fetchFavChannels(BuildContext context) async {
+  Future<List<Fav>> fetchFavChannels(BuildContext context) async {
     var response = await apiService.getAllData('fav/', isDb: true);
 
     if (response.isLeft) {
-      MyTheme.moveToErrorPage(context: context, text: response.left.message!);
+      MyTheme.showError(context: context, text: response.left.message!);
       return [];
-    } else { return response.right.map((e) => FavModel.fromJson(e)).toList(); }
+    } else { return response.right.map((e) => Fav.fromJson(e)).toList(); }
   }
 
-  Future<String> deleteFavChannel({required BuildContext context, required FavModel model}) async {
+  Future<String> deleteFavChannel({required BuildContext context, required Fav model}) async {
     var response = await apiService.deleteData('fav/delete', model.toJson(), isDb: true);
 
     if (response.isLeft) { return 'Cannot delete this channel'; }

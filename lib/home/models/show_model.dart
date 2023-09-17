@@ -1,13 +1,10 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'package:flutter/cupertino.dart';
 
 class ShowModel {
-  IconData data;
+  int count;
+  String type;
   Widget child;
-  int total_channels;
-  String show_type;
+  IconData data;
 
-  ShowModel(
-      {required this.data, required this.child, required this.total_channels,required this.show_type});
+  ShowModel({required this.data, required this.child, required this.count, required this.type});
 }

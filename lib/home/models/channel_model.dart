@@ -1,5 +1,5 @@
-import 'package:mediaplex/home/models/categories_model.dart';
-import 'package:mediaplex/home/models/countries_model.dart';
+import 'package:mediaplex/home/models/category_model.dart';
+import 'package:mediaplex/home/models/country_model.dart';
 import 'package:mediaplex/home/models/languages_model.dart';
 
 class ChannelModel {
