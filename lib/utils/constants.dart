@@ -8,11 +8,11 @@ Map<String, IconData> categories = {
   'News': Icons.newspaper,
   'Movies': Icons.movie,
   'Music': Icons.music_note_outlined,
-  'Auto': Icons.card_travel_outlined,
+  'Auto': Icons.two_wheeler,
   'Business': Icons.business,
   'Comedy': Icons.theater_comedy,
   'Documentary': Icons.theaters,
-  'Education': Icons.cast_for_education,
+  'Education': Icons.school,
   'Entertainment': Icons.movie_filter_sharp,
   'Family': Icons.family_restroom,
   'Fashion': Icons.style,
@@ -30,7 +30,7 @@ Map<String, IconData> categories = {
   'Sports': Icons.sports,
   'Travel': Icons.travel_explore,
   'Weather': Icons.sunny,
-  'XXX': Icons.local_attraction,
+  'XXX': Icons.no_adult_content,
   'Other': Icons.outbond_sharp
 };
 

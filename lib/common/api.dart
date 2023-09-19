@@ -21,6 +21,15 @@ class ApiService {
     return { 'Authorization': 'Bearer $token', 'Content-Type': 'application/json' };
   }
 
+  Future<Either<MyError, List<dynamic>>> getAllData(String endpoint, {bool isDb = false}) async {
+    Uri uri = getUri(endpoint, isDb: isDb);
+    var response = await http.get(uri, headers: await getHeaders());
+
+    if (response.statusCode == 200) return Right(jsonDecode(response.body.toString()) as List<dynamic>);
+    if (response.statusCode >= 500) return const Left(MyError(key: AppError.SERVER_ERROR));
+    return Left(MyError(key: AppError.ERROR_DETECTED, message: jsonDecode(response.body)['detail']));
+  }
+
   Future<Either<MyError, Map<String, dynamic>>> getData(String endpoint, {bool isDb = false}) async {
     Uri uri = getUri(endpoint, isDb: isDb);
     var response = await http.get(uri);
@@ -44,15 +53,6 @@ class ApiService {
     var response = await http.post(uri, body: jsonEncode(requestBody), headers: await getHeaders());
 
     if (response.statusCode == 200) return Right(jsonDecode(response.body));
-    if (response.statusCode >= 500) return const Left(MyError(key: AppError.SERVER_ERROR));
-    return Left(MyError(key: AppError.ERROR_DETECTED, message: jsonDecode(response.body)['detail']));
-  }
-
-  Future<Either<MyError, List<dynamic>>> getAllData(String endpoint, {bool isDb = false}) async {
-    Uri uri = getUri(endpoint, isDb: isDb);
-    var response = await http.get(uri, headers: await getHeaders());
-
-    if (response.statusCode == 200) return Right(jsonDecode(response.body.toString()) as List<dynamic>);
     if (response.statusCode >= 500) return const Left(MyError(key: AppError.SERVER_ERROR));
     return Left(MyError(key: AppError.ERROR_DETECTED, message: jsonDecode(response.body)['detail']));
   }

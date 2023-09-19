@@ -48,8 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) => WillPopScope(
     onWillPop: () async => false,
     child: Scaffold(
-      appBar: MyTheme.appBar(context, child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      appBar: MyTheme.appBar(context, leading: false, child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(time, style: MyTheme.appText()),
@@ -57,52 +56,50 @@ class _HomeScreenState extends State<HomeScreen> {
         ]
       )),
       body: Container(
+        padding: const EdgeInsets.all(10),
         decoration: MyTheme.boxDecoration(),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              Expanded(child: FutureBuilder<List<ChannelModel>>(
-                future: _channels,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) return Center(child: LoadingAnimationWidget.fourRotatingDots(color: MyTheme.logoLight, size: 30));
-                  if (snapshot.hasError) return Center(child: Text(snapshot.error.toString(), style: MyTheme.appText()));
+        child: Column(children: [
+          Expanded(child: FutureBuilder<List<ChannelModel>>(
+            future: _channels,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) return Center(child: Text(snapshot.error.toString(), style: MyTheme.appText(size: 20)));
+              if (snapshot.hasError) return Center(child: Text('Something went wrong...', style: MyTheme.appText(size: 20)));
 
-                  return OrientationBuilder(builder: (context, orientation) => GridView.count(
-                    shrinkWrap: false,
-                    physics: const BouncingScrollPhysics(),
-                    crossAxisCount: MediaQuery.of(context).size.width > 525 ? 3 : MediaQuery.of(context).size.width > 345 ? 2 : 1,
-                    scrollDirection: orientation == Orientation.landscape ? Axis.horizontal : Axis.vertical,
-                    children: List.generate(showModels.length, (index) {
-                      List<ChannelModel> channelObjs = [];
+              if (snapshot.hasData) {
+                return OrientationBuilder(builder: (context, orientation) => GridView.count(
+                  shrinkWrap: false,
+                  physics: const BouncingScrollPhysics(),
+                  crossAxisCount: MediaQuery.of(context).size.width > 525 ? 3 : MediaQuery.of(context).size.width > 345 ? 2 : 1,
+                  scrollDirection: orientation == Orientation.landscape ? Axis.horizontal : Axis.vertical,
+                  children: List.generate(showModels.length, (index) {
+                    List<ChannelModel> channelObjs = [];
 
-                      for (ChannelModel models in snapshot.data!) {
-                        if (models.categories!.isNotEmpty && models.categories![0].name == showModels[index].type) {
-                          channelObjs.add(models);
-                        }
+                    for (ChannelModel models in snapshot.data!) {
+                      if (models.categories!.isNotEmpty && models.categories!.contains(showModels[index].type.toLowerCase())) {
+                        channelObjs.add(models);
                       }
+                    }
 
-                      showModels[index].count = index != 0 ? channelObjs.length : snapshot.data!.length;
+                    showModels[index].count = index != 0 ? channelObjs.length : snapshot.data!.length;
 
-                      return FadeInUp(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                          child: GestureDetector(
-                            onTap: () => MyTheme.goTo(context, widget: index == 0 || index == 1
-                              ? SelectScreen(topWidget: showModels[index].child, models: index == 0 ? snapshot.data! : channelObjs)
-                              : ChannelScreen(models: channelObjs, topWidget: showModels[index].child)
-                            ),
-                            child: ShowCard(model: showModels[index])
-                          )
+                    return FadeInUp(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        child: GestureDetector(
+                          onTap: () => MyTheme.push(context, widget: index == 0 || index == 1
+                            ? SelectScreen(topWidget: showModels[index].child, models: index == 0 ? snapshot.data! : channelObjs)
+                            : ChannelScreen(models: channelObjs, topWidget: showModels[index].child)
+                          ),
+                          child: ShowCard(model: showModels[index])
                         )
-                      );
-                    })
-                  ));
-                }
-              ))
-            ]
-          )
-        )
+                      )
+                    );
+                  })
+                ));
+              } else { return Center(child: LoadingAnimationWidget.fourRotatingDots(size: 30, color: MyTheme.logoLight)); }
+            }
+          ))
+        ])
       )
     )
   );

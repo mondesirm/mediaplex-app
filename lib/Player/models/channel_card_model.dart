@@ -1,11 +1,9 @@
-// ignore_for_file: non_constant_identifier_names
-
 class ChannelCardModel {
-  String code;
-  String image_url;
-  String languages;
-  String channel_name;
-  String channel_category;
+  String logo;
+  String name;
+  String country;
+  List<String> languages;
+  List<String> categories;
 
-  ChannelCardModel({required this.code, required this.image_url, required this.languages, required this.channel_name, required this.channel_category});
+  ChannelCardModel({required this.logo, required this.name, required this.country, required this.languages, required this.categories});
 }

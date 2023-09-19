@@ -31,19 +31,12 @@ class MyTheme {
     fontWeight: weight
   );
 
-  static AppBar appBar(BuildContext context, {Widget child = const SizedBox(), String screen = ''}) => AppBar(
+  static AppBar appBar(BuildContext context, {String screen = '', bool leading = true, Widget child = const SizedBox()}) => AppBar(
     elevation: 0,
     leadingWidth: 30,
+    automaticallyImplyLeading: leading,
     backgroundColor: Colors.transparent,
-    // leading: Builder(
-    //   builder: (BuildContext context) {
-    //     return IconButton(
-    //       icon: const Icon(Icons.menu),
-    //       onPressed: () => Scaffold.of(context).openDrawer(),
-    //       tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-    //     );
-    //   }
-    // ),
+    flexibleSpace: Container(decoration: boxDecoration()),
     title: Row(
       textBaseline: TextBaseline.ideographic,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -70,26 +63,25 @@ class MyTheme {
             if (screen != 'ProfileScreen') ...[
               IconButton(
                 splashRadius: 25,
-                icon: const Icon(Icons.person, size: 25, color: MyTheme.secondary),
+                icon: const Icon(Icons.person, size: 25, color: secondary),
                 onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavScreen()))
               ),
               const SizedBox(width: 15)
             ],
             IconButton(
               splashRadius: 25,
-              onPressed: () async => showDialog(context: context, builder: (BuildContext context) => _buildLogoutDialog(context)),
-              icon: const Icon(Icons.power_settings_new, size: 25, color: MyTheme.logoLight)
+              icon: const Icon(Icons.power_settings_new, size: 25, color: logoLight),
+              onPressed: () async => showDialog(context: context, builder: (BuildContext context) => _buildLogoutDialog(context))
             )
           ]
         )
       ]
-    ),
-    flexibleSpace: Container(decoration: boxDecoration())
+    )
   );
 
   static BoxDecoration boxDecoration({
     double radius = 0,
-    List<Color> colors = const [MyTheme.darkBg, MyTheme.lightBg]
+    List<Color> colors = const [darkBg, lightBg]
   }) => BoxDecoration(
     borderRadius: BorderRadius.circular(radius),
     gradient: LinearGradient(end: Alignment.centerRight, begin: Alignment.centerLeft, colors: colors)
@@ -112,50 +104,53 @@ class MyTheme {
     contentPadding: padding ?? const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.white)),
     errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.redAccent)),
-    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: borderColor ?? Colors.white)),
-    enabledBorder: OutlineInputBorder(borderRadius: const BorderRadius.all(Radius.circular(16)), borderSide: BorderSide(color: Colors.grey.withOpacity(.2)))
+    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey.withOpacity(.2))),
+    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: borderColor ?? Colors.white))
   );
 
   static ButtonStyle buttonStyle({
     double fontSize = 10,
-    required Color backColor,
     Color fontColor = darkBg,
+    Color bgColor = logoLight,
     Color borderColor = surface,
     FontWeight weight = FontWeight.bold
   }) => ElevatedButton.styleFrom(
-    backgroundColor: backColor,
+    backgroundColor: bgColor,
     textStyle: appText(size: fontSize, weight: weight, color: fontColor),
     shape: RoundedRectangleBorder(side: BorderSide(color: borderColor), borderRadius: BorderRadius.circular(20))
   );
 
-  static goTo(BuildContext context, {required Widget widget}) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
-  }
+  static push(BuildContext context, {required Widget widget}) => Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
 
-  static showError({required BuildContext context, required String text}) {
-    goTo(context, widget: ErrorPage(text: text));
-  }
+  static showError(BuildContext context, {required String text}) => push(context, widget: ErrorPage(text: text));
+
+  static showSnackBar(BuildContext context, {required String text}) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    showCloseIcon: true,
+    closeIconColor: Colors.white,
+    backgroundColor: MyTheme.lightBg,
+    content: Text(text, style: MyTheme.appText(size: 12, weight: FontWeight.w500))
+  ));
 
   static Widget _buildLogoutDialog(BuildContext context) => AlertDialog(
-    backgroundColor: MyTheme.surface,
+    backgroundColor: surface,
     actionsAlignment: MainAxisAlignment.spaceBetween,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-    actionsPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+    actionsPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
     content: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('Are you sure you want to log out?', style: MyTheme.appText(weight: FontWeight.w500))
+        Text('Are you sure you want to log out?', style: appText(weight: FontWeight.w500))
       ]
     ),
     actions: <Widget>[
       SizedBox(
         width: 100,
         child: ElevatedButton(
-          style: MyTheme.buttonStyle(backColor: MyTheme.logoLight),
+          style: buttonStyle(),
           onPressed: () async {
             SharedPreferences preferences = await SharedPreferences.getInstance();
-            preferences.remove('session').then((value) => Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen())));
+            preferences.remove('session').then((value) => push(context, widget: const LoginScreen()));
           },
           child: const Text('Yes')
         )
@@ -163,7 +158,7 @@ class MyTheme {
       SizedBox(
         width: 100,
         child: ElevatedButton(
-          style: MyTheme.buttonStyle(backColor: MyTheme.logoLight),
+          style: buttonStyle(),
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('No')
         )

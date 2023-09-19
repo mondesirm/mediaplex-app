@@ -10,10 +10,10 @@ import 'package:mediaplex/auth/models/session_model.dart';
 class LoginService {
   final ApiService _service = ApiService();
 
-  Future<dynamic> loginUser({required LoginModel model, required BuildContext context}) async {
+  Future<dynamic> login({required LoginModel model, required BuildContext context}) async {
     var response = await _service.postData('login/', model.toJson(), isDb: true);
 
-    if (response.isLeft) return MyTheme.showError(context: context, text: response.left.message!);
+    if (response.isLeft) return MyTheme.showError(context, text: response.left.message!);
 
     SessionModel token = SessionModel.fromJson(response.right);
     SharedPreferences preferences = await SharedPreferences.getInstance();

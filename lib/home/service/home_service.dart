@@ -5,6 +5,7 @@ import 'package:mediaplex/common/api.dart';
 import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/home/models/fav_model.dart';
 import 'package:mediaplex/home/models/channel_model.dart';
+// import 'package:mediaplex/home/models/country_model.dart';
 
 class HomeService {
   ApiService apiService = ApiService();
@@ -18,7 +19,7 @@ class HomeService {
     // var countries = await apiService.getAllData('static/countries.json', isDb: true);
 
     if (streams.isLeft || channels.isLeft) {
-      MyTheme.showError(context: context, text: channels.left.message! + streams.left.message!);
+      MyTheme.showError(context, text: channels.left.message! + streams.left.message!);
       return [];
     } else {
       // Merge channels and streams based on channel name
@@ -37,19 +38,19 @@ class HomeService {
     }
   }
 
-  Future<List<Fav>> fetchFavChannels(BuildContext context) async {
+  Future<List<Fav>> fetchFavorites(BuildContext context) async {
     var response = await apiService.getAllData('fav/', isDb: true);
 
     if (response.isLeft) {
-      MyTheme.showError(context: context, text: response.left.message!);
+      MyTheme.showError(context, text: response.left.message!);
       return [];
     } else { return response.right.map((e) => Fav.fromJson(e)).toList(); }
   }
 
-  Future<String> deleteFavChannel({required BuildContext context, required Fav model}) async {
+  Future<String> deleteFavChannel(BuildContext context, {required Fav model}) async {
     var response = await apiService.deleteData('fav/delete', model.toJson(), isDb: true);
 
-    if (response.isLeft) { return 'Cannot delete this channel'; }
-    else { return 'Removed from your favorites'; }
+    if (response.isLeft) { return 'Cannot remove ${model.toJson()["name"]} from your favorites.'; }
+    else { return '${model.toJson()["name"]} was removed from your favorites.'; }
   }
 }

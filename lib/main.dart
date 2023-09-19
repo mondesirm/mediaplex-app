@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,12 +18,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Widget home = Scaffold();
+  Widget home = const Scaffold();
 
   void switchHome() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? session = sharedPreferences.getString('session');
-    setState(() => home = session == null ? LoginScreen() : HomeScreen());
+    setState(() => home = session == null ? const LoginScreen() : const HomeScreen());
   }
 
   @override

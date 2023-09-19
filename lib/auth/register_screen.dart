@@ -100,7 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         width: MediaQuery.of(context).size.width,
                         decoration: MyTheme.boxDecoration(radius: 30, colors: [MyTheme.logoDark, MyTheme.logoLight.withOpacity(0.7)]),
                         child: ElevatedButton(
-                          style: MyTheme.buttonStyle(backColor: Colors.transparent, borderColor: Colors.transparent),
+                          style: MyTheme.buttonStyle(bgColor: Colors.transparent, borderColor: Colors.transparent),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               setState(() => _isLoading = true);
@@ -115,7 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ).then((value) {
                                 if (value is SessionModel) {
                                   setState(() => _isLoading = false);
-                                  MyTheme.goTo(context, widget: const HomeScreen());
+                                  MyTheme.push(context, widget: const HomeScreen());
                                 } else { setState(() => _isLoading = false); }
                               });
                             }

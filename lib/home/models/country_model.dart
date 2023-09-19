@@ -1,16 +1,22 @@
 class Country {
-  String? name;
   String? code;
+  String? flag;
+  String? name;
+  List<String>? languages;
 
-  Country({this.name, this.code});
+  Country({this.code, this.flag, this.name, this.languages});
 
-  Country.fromString(String str) {
-    name = str;
-    code = str;
+  Country.fromJson(Map<String, dynamic> json) {
+    code = json['code'];
+    flag = json['flag'];
+    name = json['name'];
+    languages = json['languages'];
   }
 
   Map<String, dynamic> toJson() => {
+    'code': code,
     'name': name,
-    'code': code
+    'flag': flag,
+    'languages': languages
   };
 }

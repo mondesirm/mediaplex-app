@@ -19,70 +19,64 @@ class FavScreen extends StatefulWidget {
 
 class _FavScreenState extends State<FavScreen> {
   List<Fav> models = [];
-  HomeService service = HomeService();
   late Future<List<Fav>> _channels;
+  HomeService service = HomeService();
 
   @override
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-    _channels = service.fetchFavChannels(context);
+    _channels = service.fetchFavorites(context);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: MyTheme.appBar(context, screen: 'FavScreen', child: Expanded(child: Text('My Favorites', overflow: TextOverflow.ellipsis, style: MyTheme.appText(size: 18)))),
-      body: Stack(
-        children: [
-          Container(decoration: MyTheme.boxDecoration()),
-          FutureBuilder<List<Fav>>(
-            future: _channels,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                models = snapshot.data!;
+  Widget build(BuildContext context) => Scaffold(
+    appBar: MyTheme.appBar(context, screen: 'FavScreen', child: Expanded(child: Text('My Favorites', overflow: TextOverflow.ellipsis, style: MyTheme.appText()))),
+    body: Container(
+      padding: const EdgeInsets.all(10),
+      decoration: MyTheme.boxDecoration(),
+      child: FutureBuilder<List<Fav>>(
+        future: _channels,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            models = snapshot.data!;
 
-                return models.isEmpty
-                  ? Center(child: Text('No channels to watch.', style: MyTheme.appText(size: 25, weight: FontWeight.bold)))
-                  : Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height * .9,
-                          child: AnimationLimiter(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: models.length,
-                              scrollDirection: Axis.vertical,
-                              physics: const BouncingScrollPhysics(),
-                              itemBuilder: ((context, index) => AnimationConfiguration.staggeredList(
-                                position: index,
-                                duration: const Duration(seconds: 1),
-                                child: SlideAnimation(
-                                  horizontalOffset: 80,
-                                  child: FadeInAnimation(
-                                    child: FavCard(
-                                      index: index + 1,
-                                      model: models[index],
-                                      onTap: () => showDialog(context: context, builder: (BuildContext context) => _buildPopupDialog(context, model: models[index]))
-                                    )
-                                  )
-                                )
-                              ))
+            return models.isEmpty
+              ? Center(child: Text('No favorites found', style: MyTheme.appText(size: 25, weight: FontWeight.bold)))
+              : Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * .9,
+                  child: AnimationLimiter(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: models.length,
+                      scrollDirection: Axis.vertical,
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: ((context, index) => AnimationConfiguration.staggeredList(
+                        position: index,
+                        duration: const Duration(seconds: 1),
+                        child: SlideAnimation(
+                          horizontalOffset: 80,
+                          child: FadeInAnimation(
+                            child: FavCard(
+                              index: index + 1,
+                              model: models[index],
+                              onDelete: () => showDialog(context: context, builder: (BuildContext context) => _buildPopupDialog(context, model: models[index]))
                             )
                           )
                         )
-                      )
-                    );
-              } else { return Center(child: LoadingAnimationWidget.fourRotatingDots(size: 30, color: MyTheme.logoLight)); }
-            }
-          )
-        ]
+                      ))
+                    )
+                  )
+                )
+              );
+          } else { return Center(child: LoadingAnimationWidget.fourRotatingDots(size: 30, color: MyTheme.logoLight)); }
+        }
       )
-    );
-  }
+    )
+  );
 
   Widget _buildPopupDialog(BuildContext context, {required Fav model}) => AlertDialog(
     backgroundColor: MyTheme.surface,
@@ -93,19 +87,17 @@ class _FavScreenState extends State<FavScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('Do you want to remove this channel \nfrom your favorites?', style: MyTheme.appText(weight: FontWeight.w500))
+        Text('Do you want to remove this channel from your favorites?', style: MyTheme.appText(weight: FontWeight.w500))
       ]
     ),
     actions: <Widget>[
       SizedBox(
         width: 100,
         child: ElevatedButton(
-          style: MyTheme.buttonStyle(backColor: MyTheme.logoLight),
+          style: MyTheme.buttonStyle(),
           onPressed: () {
-            service.deleteFavChannel(context: context, model: model).then((value) {
-              final snackBar = SnackBar(backgroundColor: (MyTheme.lightBg), content: Text(value, style: MyTheme.appText(size: 12, weight: FontWeight.w500)));
-
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            service.deleteFavChannel(context, model: model).then((value) {
+              MyTheme.showSnackBar(context, text: value);
               setState(() => models.remove(model));
               Navigator.of(context).pop();
             });
@@ -113,10 +105,7 @@ class _FavScreenState extends State<FavScreen> {
           child: const Text('Yes')
         )
       ),
-      SizedBox(
-        width: 100,
-        child: ElevatedButton(style: MyTheme.buttonStyle(backColor: MyTheme.logoLight), onPressed: () => Navigator.of(context).pop(), child: const Text('No'))
-      )
+      SizedBox(width: 100, child: ElevatedButton(style: MyTheme.buttonStyle(), onPressed: () => Navigator.of(context).pop(), child: const Text('No')))
     ]
   );
 }

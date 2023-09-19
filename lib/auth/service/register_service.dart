@@ -13,7 +13,7 @@ class SignUpService {
   Future<dynamic> registerUser({required RegisterModel model, required BuildContext context}) async {
     var response = await _service.postData('user/', model.toJson(), isDb: true);
 
-    if (response.isLeft) return MyTheme.showError(context: context, text: response.left.message!);
+    if (response.isLeft) return MyTheme.showError(context, text: response.left.message!);
 
     SessionModel token = SessionModel.fromJson(response.right);
     SharedPreferences preferences = await SharedPreferences.getInstance();

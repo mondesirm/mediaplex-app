@@ -22,18 +22,12 @@ class _SelectScreenState extends State<SelectScreen> {
   @override
   Widget build(BuildContext context) {
     // We use the number of unique countries in widget.models instead of countryIcons
-    var uniqueCountries = widget.models.map((e) => e.countries!.isNotEmpty ? e.countries![0].code!.toLowerCase() : '').toSet().toList();
+    var uniqueCountries = widget.models.map((e) => e.country!.isNotEmpty ? e.country!.toLowerCase() : '').toSet().toList();
 
     return Scaffold(
       appBar: MyTheme.appBar(context, screen: 'SelectScreen', child: widget.topWidget),
       body: Stack(children: [
-        Container(decoration: const BoxDecoration(gradient: LinearGradient(
-          stops: [0, 1],
-          tileMode: TileMode.clamp,
-          end: FractionalOffset(1, 0),
-          begin: FractionalOffset(0, 0),
-          colors: [MyTheme.background, MyTheme.slightBlue]
-        ))),
+        Container(decoration: MyTheme.boxDecoration()),
         Align(
           alignment: Alignment.center,
           child: Column(
@@ -57,22 +51,22 @@ class _SelectScreenState extends State<SelectScreen> {
                     onPageChanged: (index, reason) => setState(() => _current = index)
                   ),
                   itemBuilder: ((context, index, realIndex) {
-                    int total_channels = 0;
+                    int count = 0;
                     String country_name = '';
 
                     List<ChannelModel> countryChannels = widget.models.where((e) {
-                      return e.countries!.isNotEmpty ? e.countries![0].code!.toLowerCase() == uniqueCountries[index] : false;
+                      return e.country!.isNotEmpty ? e.country!.toLowerCase() == uniqueCountries[index] : false;
                     }).toList();
 
                     if (countryChannels.isNotEmpty) {
                       for (ChannelModel model in countryChannels) {
-                        if (model.countries!.isNotEmpty) {
-                          country_name = model.countries![0].name!;
+                        if (model.country!.isNotEmpty) {
+                          country_name = model.country!;
                           break;
                         }
                       }
 
-                      total_channels = countryChannels.length;
+                      count = countryChannels.length;
                     }
 
                     return Column(children: [
@@ -94,7 +88,7 @@ class _SelectScreenState extends State<SelectScreen> {
                           height: 120,
                           decoration: index == _current ? BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(width: 5, color: MyTheme.white)
+                            border: Border.all(width: 5, color: Colors.white)
                           ) : null,
                           child: Image.asset('countries/${uniqueCountries[index]}.png', width: 120, height: 120, fit: BoxFit.contain)
                         )
@@ -115,8 +109,8 @@ class _SelectScreenState extends State<SelectScreen> {
                               )
                             ),
                             Text(
-                              '$total_channels channel${total_channels > 1 ? 's' : ''}',
-                              style: MyTheme.appText(weight: FontWeight.w500, color: Colors.white54)
+                              '${count == 0 ? 'No' : count} channel${count == 1 ? '' : 's'}',
+                              style: MyTheme.appText(weight: FontWeight.w500, color: Colors.grey)
                             )
                           ]
                         )
@@ -140,13 +134,13 @@ class _SelectScreenState extends State<SelectScreen> {
           child: Container(
             padding: const EdgeInsets.all(10),
             margin: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: MyTheme.background, borderRadius: BorderRadius.circular(15)),
+            decoration: BoxDecoration(color: MyTheme.darkBg, borderRadius: BorderRadius.circular(15)),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               textBaseline: TextBaseline.alphabetic,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(Icons.tv, color: MyTheme.white),
+                const Icon(Icons.tv, color: Colors.white),
                 const SizedBox(width: 8),
                 Text('All', style: MyTheme.appText()),
                 const SizedBox(width: 20),

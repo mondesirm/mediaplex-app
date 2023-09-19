@@ -58,14 +58,14 @@ class _ChannelScreenState extends State<ChannelScreen> {
                 child: FadeInAnimation(
                   child: AnimatedChannelCard(
                     isLive: widget.isLive,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Player(videoUrl: widget.models[index].url!))),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Player(model: widget.models[index]))),
                     onFav: () => showDialog(context: context, builder: (BuildContext context) => _buildPopupDialog(context, model: widget.models[index])),
                     model: ChannelCardModel(
-                      channel_name: widget.models[index].name!,
-                      languages: widget.models[index].languages!.isNotEmpty ? widget.models[index].languages![0].name! : 'None',
-                      code: widget.models[index].countries!.isNotEmpty ? widget.models[index].countries![0].code! : 'International',
-                      image_url: widget.models[index].logo != null ? widget.models[index].logo! : 'https://i.imgur.com/rzrOS3N.png',
-                      channel_category: widget.models[index].categories!.isNotEmpty ? widget.models[index].categories![0].name! : 'Entertainment'
+                      logo: widget.models[index].logo!,
+                      name: widget.models[index].name!,
+                      country: widget.models[index].country!.isNotEmpty ? widget.models[index].country![0] : 'International',
+                      languages: widget.models[index].languages!.isNotEmpty ? widget.models[index].languages! : ['Language Unknown'],
+                      categories: widget.models[index].categories!.isNotEmpty ? widget.models[index].categories! : ['Uncategorized']
                     )
                   )
                 )
@@ -96,7 +96,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
       SizedBox(
         width: 100,
         child: ElevatedButton(
-          style: MyTheme.buttonStyle(backColor: MyTheme.logoLight),
+          style: MyTheme.buttonStyle(),
           onPressed: () {
             service.addToFav(context: context, model: model).then((value) {
               final snackBar = SnackBar(backgroundColor: MyTheme.lightBg, content: Text(value, style: MyTheme.appText(size: 12, weight: FontWeight.w500)));
@@ -111,7 +111,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
         width: 100,
         child: ElevatedButton(
           onPressed: () => Navigator.of(context).pop(),
-          style: MyTheme.buttonStyle(backColor: MyTheme.logoLight),
+          style: MyTheme.buttonStyle(),
           child: const Text('No')
         )
       )

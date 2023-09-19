@@ -7,8 +7,8 @@ import 'package:mediaplex/player/models/channel_card_model.dart';
 
 class AnimatedChannelCard extends ChannelCard {
   const AnimatedChannelCard({
-      Key? key, isLive = false, required onFav, required onTap, required model
-    }) : super(key: key, isLive: isLive, onFav: onFav, onTap: onTap, model: model);
+    Key? key, isLive = false, required onFav, required onTap, required model
+  }) : super(key: key, isLive: isLive, onFav: onFav, onTap: onTap, model: model);
 
   @override
   State<AnimatedChannelCard> createState() => _AnimatedChannelCardState();
@@ -78,9 +78,9 @@ class _ChannelCardState extends State<ChannelCard> {
               Center(child: ClipRRect(
                 borderRadius: const BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
                 child: CachedNetworkImage(
-                  imageUrl: widget.model.image_url,
+                  imageUrl: widget.model.logo,
                   errorWidget: (context, url, error) => const Icon(Icons.error, size: 50, color: Colors.white),
-                  placeholder: (context, url) => LoadingAnimationWidget.fourRotatingDots(size: 20, color: MyTheme.white),
+                  placeholder: (context, url) => LoadingAnimationWidget.fourRotatingDots(size: 20, color: Colors.white),
                   imageBuilder: (context, image) => Container(decoration: BoxDecoration(image: DecorationImage(fit: BoxFit.contain, image: image)))
                 )
               ))]
@@ -103,11 +103,11 @@ class _ChannelCardState extends State<ChannelCard> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(widget.model.channel_name, overflow: TextOverflow.ellipsis, style: MyTheme.appText(color: MyTheme.background)),
+                Text(widget.model.name, overflow: TextOverflow.ellipsis, style: MyTheme.appText(color: MyTheme.darkBg)),
                 Text(
+                  widget.isLive ? widget.model.categories.join(' • ') : widget.model.languages.join(' • '),
                   overflow: TextOverflow.ellipsis,
-                  widget.isLive ? widget.model.channel_category : widget.model.languages,
-                  style: MyTheme.appText(size: 12, weight: FontWeight.w500, color: MyTheme.background)
+                  style: MyTheme.appText(size: 12, weight: FontWeight.w500, color: MyTheme.darkBg)
                 )
               ]
             ),

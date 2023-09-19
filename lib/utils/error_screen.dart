@@ -59,8 +59,8 @@ class _ErrorPageState extends State<ErrorPage> {
                   )
                 ),
                 child: ElevatedButton(
-                  onPressed: () => MyTheme.goTo(context, widget: const LoginScreen()),
-                  style: MyTheme.buttonStyle(backColor: Colors.transparent, borderColor: Colors.transparent),
+                  onPressed: () => MyTheme.push(context, widget: const LoginScreen()),
+                  style: MyTheme.buttonStyle(bgColor: Colors.transparent, borderColor: Colors.transparent),
                   child: Text('Go Back', style: MyTheme.appText(size: 16))
                 )
               )

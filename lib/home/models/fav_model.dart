@@ -1,19 +1,19 @@
 class Fav {
-  String? streamLink;
+  String? url;
+  String? name;
   String? category;
-  String? channelName;
 
-  Fav({this.streamLink, this.category, this.channelName});
+  Fav({this.url, this.name, this.category});
 
   Fav.fromJson(Map<String, dynamic> json) {
-    streamLink = json['stream_link'];
+    url = json['url'];
+    name = json['name'];
     category = json['category'];
-    channelName = json['channel_name'];
   }
 
   Map<String, dynamic> toJson() => {
-    'stream_link': streamLink,
-    'category': category,
-    'channel_name': channelName
+    'url': url,
+    'name': name,
+    'category': category
   };
 }
