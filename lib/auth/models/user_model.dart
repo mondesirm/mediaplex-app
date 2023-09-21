@@ -23,33 +23,25 @@ class Profile {
   };
 }
 
-class ChangePassword {
+class ProfileUpdate {
+  String? email;
+  String? username;
   String? oldPassword;
   String? newPassword;
 
-  ChangePassword({this.oldPassword, this.newPassword});
+  ProfileUpdate({this.email, this.username, this.oldPassword, this.newPassword});
 
-  ChangePassword.fromJson(Map<String, dynamic> json) {
+  ProfileUpdate.fromJson(Map<String, dynamic> json) {
+    email = json['email'];
+    username = json['username'];
     oldPassword = json['old_password'];
     newPassword = json['new_password'];
   }
 
   Map<String, dynamic> toJson() => {
-    'old_password': oldPassword,
-    'new_password': newPassword,
-  };
-}
-
-class ResetPassword {
-  String? email;
-
-  ResetPassword({this.email});
-
-  ResetPassword.fromJson(Map<String, dynamic> json) {
-    email = json['email'];
-  }
-
-  Map<String, dynamic> toJson() => {
     'email': email,
+    'username': username,
+    'old_password': oldPassword,
+    'new_password': newPassword
   };
 }

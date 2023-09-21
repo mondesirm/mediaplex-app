@@ -105,7 +105,7 @@ class _FavScreenState extends State<FavScreen> {
             service.deleteFav(context, model: model).then((value) {
               MyTheme.showSnackBar(context, text: value);
               setState(() => models.remove(model));
-            }).onError((error, stackTrace) {
+            }).catchError((error) {
               MyTheme.showError(context, text: error.toString());
             }).whenComplete(() => Navigator.of(context).pop());
           },

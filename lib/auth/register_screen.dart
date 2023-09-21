@@ -106,9 +106,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (_formKey.currentState!.validate()) {
                           setState(() => _isLoading = true);
 
-                          service.register(
-                            context: context,
-                            model: RegisterModel(
+                          service.register(context, model: RegisterModel(
                               email: emailController.text,
                               password: passwordController.text,
                               username: usernameController.text

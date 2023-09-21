@@ -10,7 +10,7 @@ import 'package:mediaplex/auth/models/register_model.dart';
 class RegisterService {
   final ApiService _service = ApiService();
 
-  Future<dynamic> register({required RegisterModel model, required BuildContext context}) async {
+  Future<dynamic> register(BuildContext context, {required RegisterModel model}) async {
     var response = await _service.post('user', model.toJson(), isDb: true);
 
     if (response.isLeft) return MyTheme.showError(context, text: response.left.message!);
