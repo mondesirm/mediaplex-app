@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mediaplex/home/screens/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'error_screen.dart';
 import 'package:mediaplex/auth/login_screen.dart';
@@ -31,7 +33,12 @@ class MyTheme {
     fontWeight: weight
   );
 
-  static AppBar appBar(BuildContext context, {String screen = '', bool leading = true, Widget child = const SizedBox()}) => AppBar(
+  static AppBar appBar(BuildContext context, {
+    String screen = '',
+    bool leading = true,
+    List<Widget> actions = const [],
+    Widget child = const SizedBox()
+  }) => AppBar(
     elevation: 0,
     leadingWidth: 30,
     automaticallyImplyLeading: leading,
@@ -42,7 +49,7 @@ class MyTheme {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (MediaQuery.of(context).size.width > 500) ...[
-          SvgPicture.asset('logo.svg', height: 20),
+          SvgPicture.asset('logo.svg', height: 20, placeholderBuilder: (context) => loadingAnimation()),
           const SizedBox(width: 20),
           Center(child: Container(width: 1.5, height: 40, color: Colors.white.withOpacity(.5))),
           const SizedBox(width: 20)
@@ -52,22 +59,24 @@ class MyTheme {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (screen != 'FavScreen') ...[
+            // Add a SizedBox after every element to add spacing between them
+            ...actions.map((e) => Row(children: [e, const SizedBox(width: 15)])).toList(),
+            if (screen != 'FavScreen') Row(children: [
               IconButton(
                 splashRadius: 25,
                 icon: const Icon(Icons.favorite, size: 25, color: Colors.red),
                 onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavScreen()))
               ),
               const SizedBox(width: 15)
-            ],
-            if (screen != 'ProfileScreen') ...[
+            ]),
+            if (screen != 'ProfileScreen') Row(children: [
               IconButton(
                 splashRadius: 25,
                 icon: const Icon(Icons.person, size: 25, color: secondary),
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavScreen()))
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()))
               ),
               const SizedBox(width: 15)
-            ],
+            ]),
             IconButton(
               splashRadius: 25,
               icon: const Icon(Icons.power_settings_new, size: 25, color: logoLight),
@@ -120,9 +129,11 @@ class MyTheme {
     shape: RoundedRectangleBorder(side: BorderSide(color: borderColor), borderRadius: BorderRadius.circular(20))
   );
 
-  static push(BuildContext context, {required Widget widget}) => Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
+  static push(BuildContext context, {required Widget widget, bool replace = false}) => (replace ? Navigator.pushReplacement : Navigator.push)(context, MaterialPageRoute(builder: (context) => widget));
 
   static showError(BuildContext context, {required String text}) => push(context, widget: ErrorPage(text: text));
+
+  static loadingAnimation() => LoadingAnimationWidget.fourRotatingDots(size: 30, color: MyTheme.logoLight);
 
   static showSnackBar(BuildContext context, {required String text}) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     showCloseIcon: true,
@@ -150,19 +161,17 @@ class MyTheme {
           style: buttonStyle(),
           onPressed: () async {
             SharedPreferences preferences = await SharedPreferences.getInstance();
-            preferences.remove('session').then((value) => push(context, widget: const LoginScreen()));
+            preferences.remove('token').then((value) {
+              // Go back to the first screen and replace it with LoginScreen
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              push(context, replace: true, widget: const LoginScreen());
+              showSnackBar(context, text: 'You have been logged out successfully.');
+            });
           },
           child: const Text('Yes')
         )
       ),
-      SizedBox(
-        width: 100,
-        child: ElevatedButton(
-          style: buttonStyle(),
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('No')
-        )
-      )
+      SizedBox(width: 100, child: ElevatedButton(style: buttonStyle(), onPressed: () => Navigator.of(context).pop(), child: const Text('No')))
     ]
   );
 }

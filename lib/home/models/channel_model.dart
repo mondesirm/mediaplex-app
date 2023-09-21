@@ -1,4 +1,4 @@
-class ChannelModel {
+class Channel {
   String? url;
   String? logo;
   String? name;
@@ -6,30 +6,20 @@ class ChannelModel {
   List<String>? languages;
   List<String>? categories;
 
-  ChannelModel({this.url, this.logo, this.name, this.country, this.languages, this.categories});
+  Channel({this.url, this.logo, this.name, this.country, this.languages, this.categories});
 
-  ChannelModel.fromJson(Map<String, dynamic> json) {
+  Channel.fromJson(Map<String, dynamic> json) {
     url = json['url'];
     logo = json['logo'];
     name = json['name'];
     country = json['country'];
-    // languages = json['languages']! ?? [];
-    // categories = json['categories']! ?? [];
-
-    if (json['categories'] != null) {
-      categories = <String>[];
-      json['categories'].forEach((v) => categories!.add(v));
-    }
-
-    if (json['languages'] != null) {
-      languages = <String>[];
-      json['languages'].forEach((v) => languages!.add(v));
-    }
+    languages = json['languages']! != null ? json['languages'].cast<String>() : null;
+    categories = json['categories']! != null ? json['categories'].cast<String>() : null;
   }
 
   Map<String, dynamic> toJson() => {
     'url': url,
     'name': name,
-    'category': categories!.join(' • ')
+    'category': categories!.map((_) => _[0].toUpperCase() + _.substring(1)).toList().join(' • ')
   };
 }

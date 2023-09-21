@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'theme.dart';
-import 'package:mediaplex/home/models/show_model.dart';
+import 'package:mediaplex/home/models/category_card_model.dart';
 
 Map<String, IconData> categories = {
   'Live': Icons.connected_tv,
@@ -34,7 +34,7 @@ Map<String, IconData> categories = {
   'Other': Icons.outbond_sharp
 };
 
-List<ShowModel> showModels = categories.keys.map((e) => ShowModel(
+List<CategoryCardModel> categoryCards = categories.keys.map((e) => CategoryCardModel(
   type: e,
   count: 0,
   data: categories[e]!,

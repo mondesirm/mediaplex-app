@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:mediaplex/utils/theme.dart';
-import 'package:mediaplex/home/models/show_model.dart';
+import 'package:mediaplex/home/models/category_card_model.dart';
 
 class ShowCard extends StatefulWidget {
   const ShowCard({super.key, required this.model});
 
-  final ShowModel model;
+  final CategoryCardModel model;
 
   @override
   State<ShowCard> createState() => _ShowCardState();

@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:animate_do/animate_do.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'package:mediaplex/utils/theme.dart';
@@ -18,8 +16,9 @@ class FavScreen extends StatefulWidget {
 }
 
 class _FavScreenState extends State<FavScreen> {
+  bool reverse = true;
   List<Fav> models = [];
-  late Future<List<Fav>> _channels;
+  late Future<List<Fav>> _favorites;
   HomeService service = HomeService();
 
   @override
@@ -27,18 +26,31 @@ class _FavScreenState extends State<FavScreen> {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-    _channels = service.fetchFavorites(context);
+    _favorites = service.fetchFavs(context);
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: MyTheme.appBar(context, screen: 'FavScreen', child: Expanded(child: Text('My Favorites', overflow: TextOverflow.ellipsis, style: MyTheme.appText()))),
+    appBar: MyTheme.appBar(
+      context,
+      screen: 'FavScreen',
+      actions: [
+        IconButton(
+          splashRadius: 25,
+          onPressed: () => setState(() => reverse = !reverse),
+          icon: Icon(reverse ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded, color: MyTheme.logoLight)
+        )
+      ],
+      child: Expanded(child: Text('My Favorites', overflow: TextOverflow.ellipsis, style: MyTheme.appText()))
+    ),
     body: Container(
       padding: const EdgeInsets.all(10),
       decoration: MyTheme.boxDecoration(),
       child: FutureBuilder<List<Fav>>(
-        future: _channels,
+        future: _favorites,
         builder: (context, snapshot) {
+          if (snapshot.hasError) return Center(child: Text('Something went wrong...\nPlease try again later.', textAlign: TextAlign.center, style: MyTheme.appText(size: 20)));
+
           if (snapshot.hasData) {
             models = snapshot.data!;
 
@@ -46,33 +58,27 @@ class _FavScreenState extends State<FavScreen> {
               ? Center(child: Text('No favorites found', style: MyTheme.appText(size: 25, weight: FontWeight.bold)))
               : Align(
                 alignment: Alignment.topLeft,
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * .9,
-                  child: AnimationLimiter(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: models.length,
-                      scrollDirection: Axis.vertical,
-                      physics: const BouncingScrollPhysics(),
-                      itemBuilder: ((context, index) => AnimationConfiguration.staggeredList(
-                        position: index,
-                        duration: const Duration(seconds: 1),
-                        child: SlideAnimation(
-                          horizontalOffset: 80,
-                          child: FadeInAnimation(
-                            child: FavCard(
-                              index: index + 1,
-                              model: models[index],
-                              onDelete: () => showDialog(context: context, builder: (BuildContext context) => _buildPopupDialog(context, model: models[index]))
-                            )
-                          )
-                        )
+                child: AnimationLimiter(child: ListView.builder(
+                  reverse: reverse,
+                  shrinkWrap: true,
+                  itemCount: models.length,
+                  scrollDirection: Axis.vertical,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: ((context, index) => AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(seconds: 1),
+                    child: SlideAnimation(
+                      horizontalOffset: 80,
+                      child: FadeInAnimation(child: FavCard(
+                        index: index + 1,
+                        model: models[index],
+                        onDelete: () => showDialog(context: context, builder: (BuildContext context) => _buildPopupDialog(context, model: models[index]))
                       ))
                     )
-                  )
-                )
+                  ))
+                ))
               );
-          } else { return Center(child: LoadingAnimationWidget.fourRotatingDots(size: 30, color: MyTheme.logoLight)); }
+          } else { return Center(child: MyTheme.loadingAnimation()); }
         }
       )
     )
@@ -96,11 +102,12 @@ class _FavScreenState extends State<FavScreen> {
         child: ElevatedButton(
           style: MyTheme.buttonStyle(),
           onPressed: () {
-            service.deleteFavChannel(context, model: model).then((value) {
+            service.deleteFav(context, model: model).then((value) {
               MyTheme.showSnackBar(context, text: value);
               setState(() => models.remove(model));
-              Navigator.of(context).pop();
-            });
+            }).onError((error, stackTrace) {
+              MyTheme.showError(context, text: error.toString());
+            }).whenComplete(() => Navigator.of(context).pop());
           },
           child: const Text('Yes')
         )

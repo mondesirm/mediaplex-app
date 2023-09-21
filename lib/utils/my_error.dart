@@ -6,5 +6,5 @@ class MyError {
   final AppError key;
   final String? message;
 
-  const MyError({required this.key, this.message = 'A server error occurred'});
+  const MyError({required this.key, this.message = 'A server error occurred.'});
 }

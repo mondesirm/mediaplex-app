@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
 
   void switchHome() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String? session = sharedPreferences.getString('session');
+    String? session = sharedPreferences.getString('token');
     setState(() => home = session == null ? const LoginScreen() : const HomeScreen());
   }
 

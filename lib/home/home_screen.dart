@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'widgets/show_card.dart';
 import 'models/channel_model.dart';
@@ -23,10 +22,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // ignore: unused_field
   late Timer _timer;
+  late String? lastScreen;
   HomeService service = HomeService();
-  late Future<List<ChannelModel>> _channels;
+  late Future<List<Channel>> _channels;
   String time = DateFormat.jm().format(DateTime.now()).toString();
   String date = DateFormat.yMMMd().format(DateTime.now()).toString();
+
+  // void init() async {
+  //   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  //   lastScreen = sharedPreferences.getString('lastScreen');
+  //   if (lastScreen == null) sharedPreferences.setString('lastScreen', 'HomeScreen');
+  //   if (lastScreen != 'HomeScreen') MyTheme.push(context, widget: lastScreen == 'FavScreen' ? const FavScreen() : const ProfileScreen());
+  // }
 
   @override
   void initState() {
@@ -35,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
     _channels = service.fetchChannels(context);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) => _update());
+    // init();
   }
 
   void _update() {
@@ -58,48 +66,42 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Container(
         padding: const EdgeInsets.all(10),
         decoration: MyTheme.boxDecoration(),
-        child: Column(children: [
-          Expanded(child: FutureBuilder<List<ChannelModel>>(
-            future: _channels,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) return Center(child: Text(snapshot.error.toString(), style: MyTheme.appText(size: 20)));
-              if (snapshot.hasError) return Center(child: Text('Something went wrong...', style: MyTheme.appText(size: 20)));
+        child: FutureBuilder<List<Channel>>(
+          future: _channels,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) return Center(child: Text('Something went wrong...\nPlease try again later.', textAlign: TextAlign.center, style: MyTheme.appText(size: 20)));
 
-              if (snapshot.hasData) {
-                return OrientationBuilder(builder: (context, orientation) => GridView.count(
-                  shrinkWrap: false,
-                  physics: const BouncingScrollPhysics(),
-                  crossAxisCount: MediaQuery.of(context).size.width > 525 ? 3 : MediaQuery.of(context).size.width > 345 ? 2 : 1,
-                  scrollDirection: orientation == Orientation.landscape ? Axis.horizontal : Axis.vertical,
-                  children: List.generate(showModels.length, (index) {
-                    List<ChannelModel> channelObjs = [];
+            if (snapshot.hasData) {
+              return OrientationBuilder(builder: (context, orientation) => GridView.count(
+                physics: const BouncingScrollPhysics(),
+                crossAxisCount: MediaQuery.of(context).size.width > 525 ? 3 : MediaQuery.of(context).size.width > 345 ? 2 : 1,
+                scrollDirection: orientation == Orientation.landscape ? Axis.horizontal : Axis.vertical,
+                children: List.generate(categoryCards.length, (index) {
+                  List<Channel> models = [];
 
-                    for (ChannelModel models in snapshot.data!) {
-                      if (models.categories!.isNotEmpty && models.categories!.contains(showModels[index].type.toLowerCase())) {
-                        channelObjs.add(models);
-                      }
+                  for (Channel channels in snapshot.data!) {
+                    if (channels.categories!.isNotEmpty && channels.categories!.contains(categoryCards[index].type.toLowerCase())) {
+                      models.add(channels);
                     }
+                  }
 
-                    showModels[index].count = index != 0 ? channelObjs.length : snapshot.data!.length;
+                  categoryCards[index].count = index != 0 ? models.length : snapshot.data!.length;
 
-                    return FadeInUp(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        child: GestureDetector(
-                          onTap: () => MyTheme.push(context, widget: index == 0 || index == 1
-                            ? SelectScreen(topWidget: showModels[index].child, models: index == 0 ? snapshot.data! : channelObjs)
-                            : ChannelScreen(models: channelObjs, topWidget: showModels[index].child)
-                          ),
-                          child: ShowCard(model: showModels[index])
-                        )
-                      )
-                    );
-                  })
-                ));
-              } else { return Center(child: LoadingAnimationWidget.fourRotatingDots(size: 30, color: MyTheme.logoLight)); }
-            }
-          ))
-        ])
+                  return FadeInUp(child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    child: GestureDetector(
+                      onTap: () => MyTheme.push(context, widget: index == 0 || index == 1
+                        ? SelectScreen(topWidget: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
+                        : ChannelScreen(models: models, topWidget: categoryCards[index].child)
+                      ),
+                      child: ShowCard(model: categoryCards[index])
+                    )
+                  ));
+                })
+              ));
+            } else { return Center(child: MyTheme.loadingAnimation()); }
+          }
+        )
       )
     )
   );
