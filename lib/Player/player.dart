@@ -43,8 +43,8 @@ class _PlayerState extends State<Player> {
     // betterPlayerController = BetterPlayer.network(test, betterPlayerConfiguration: betterPlayerConfiguration);
     chewieController = ChewieController(looping: true, autoPlay: true, aspectRatio: 3 / 2, videoPlayerController: videoPlayerController);
 
-    // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    // sharedPreferences.setString('lastPlayed', model.toString());
+    // SharedPreferences preferences = await SharedPreferences.getInstance();
+    // preferences.setString('lastPlayed', model.toString());
   }
 
   @override

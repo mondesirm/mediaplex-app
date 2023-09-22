@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home/home_screen.dart';
-import 'auth/login_screen.dart';
+import 'auth/screens/login_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +21,8 @@ class _MyAppState extends State<MyApp> {
   Widget home = const Scaffold();
 
   void switchHome() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String? session = sharedPreferences.getString('token');
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? session = preferences.getString('token');
     setState(() => home = session == null ? const LoginScreen() : const HomeScreen());
   }
 

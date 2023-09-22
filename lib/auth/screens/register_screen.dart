@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-import 'models/register_model.dart';
-import 'service/register_service.dart';
 import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/home/home_screen.dart';
+import 'package:mediaplex/auth/service/auth_service.dart';
 import 'package:mediaplex/auth/models/session_model.dart';
+import 'package:mediaplex/auth/models/register_model.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -17,11 +17,11 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
-  RegisterService service = RegisterService();
-  final _formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final usernameController = TextEditingController();
+  final AuthService _service = AuthService();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _username = TextEditingController();
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -44,13 +44,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Text('Create an account to continue', style: MyTheme.appText(weight: FontWeight.w500)),
             const SizedBox(height: 40),
             SizedBox(
-              width: MediaQuery.of(context).size.width * .7,
+              width: MediaQuery.sizeOf(context).width * .7,
               child: Form(
                 key: _formKey,
                 child: Column(children: [
                   TextFormField(
                     autofocus: true,
-                    controller: usernameController,
+                    controller: _username,
                     autofillHints: const ['Username'],
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (value) => TextInputAction.next,
@@ -64,7 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
-                    controller: emailController,
+                    controller: _email,
                     autofillHints: const ['Email'],
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (value) => TextInputAction.next,
@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 12),
                   TextFormField(
                     obscureText: true,
-                    controller: passwordController,
+                    controller: _password,
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (value) => TextInputAction.done,
                     style: MyTheme.appText(weight: FontWeight.normal),
@@ -98,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 20),
                   Container(
                     height: 50,
-                    width: MediaQuery.of(context).size.width,
+                    width: MediaQuery.sizeOf(context).width,
                     decoration: MyTheme.boxDecoration(radius: 30, colors: [MyTheme.logoDark, MyTheme.logoLight.withOpacity(0.7)]),
                     child: ElevatedButton(
                       style: MyTheme.buttonStyle(bgColor: Colors.transparent, borderColor: Colors.transparent),
@@ -106,13 +106,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (_formKey.currentState!.validate()) {
                           setState(() => _isLoading = true);
 
-                          service.register(context, model: RegisterModel(
-                              email: emailController.text,
-                              password: passwordController.text,
-                              username: usernameController.text
-                            )
-                          ).then((value) {
-                            if (value is SessionModel) MyTheme.push(context, widget: const HomeScreen());
+                          _service.register(context, model: Register(email: _email.text, password: _password.text, username: _username.text)).then((value) {
+                            if (value is SessionModel) MyTheme.push(context, replace: true, widget: const HomeScreen());
                           }).catchError((error) {
                             MyTheme.showSnackBar(context, text: 'Something went wrong... Please try again later.');
                           }).whenComplete(() => setState(() => _isLoading = false));

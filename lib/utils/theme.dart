@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'error_screen.dart';
-import 'package:mediaplex/auth/login_screen.dart';
+import 'package:mediaplex/auth/screens/login_screen.dart';
 import 'package:mediaplex/home/screens/fav_screen.dart';
 
 class MyTheme {
@@ -34,12 +34,14 @@ class MyTheme {
   );
 
   static AppBar appBar(BuildContext context, {
-    String screen = '',
+    String? screen,
     bool leading = true,
+    PreferredSizeWidget? bottom,
     List<Widget> actions = const [],
     Widget child = const SizedBox()
   }) => AppBar(
     elevation: 0,
+    bottom: bottom,
     leadingWidth: 30,
     automaticallyImplyLeading: leading,
     backgroundColor: Colors.transparent,
@@ -48,8 +50,8 @@ class MyTheme {
       textBaseline: TextBaseline.ideographic,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (MediaQuery.of(context).size.width > 500) ...[
-          SvgPicture.asset('logo.svg', height: 20, placeholderBuilder: (context) => loadingAnimation()),
+        if (MediaQuery.sizeOf(context).width > 500) ...[
+          SvgPicture.asset('logo.svg', height: 20, placeholderBuilder: (context) => SizedBox(width: 154, child: loadingAnimation())),
           const SizedBox(width: 20),
           Center(child: Container(width: 1.5, height: 40, color: Colors.white.withOpacity(.5))),
           const SizedBox(width: 20)
@@ -61,25 +63,38 @@ class MyTheme {
           children: [
             // Add a SizedBox after every element to add spacing between them
             ...actions.map((e) => Row(children: [e, const SizedBox(width: 15)])).toList(),
-            if (screen != 'FavScreen') Row(children: [
+            if (screen != 'HomeScreen') Row(children: [
               IconButton(
                 splashRadius: 25,
-                icon: const Icon(Icons.favorite, size: 25, color: Colors.red),
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FavScreen()))
+                tooltip: 'Go Home',
+                icon: const Icon(Icons.home_filled, size: 25),
+                onPressed: () => Navigator.popUntil(context, ((route) => route.isFirst))
               ),
               const SizedBox(width: 15)
             ]),
-            if (screen != 'ProfileScreen') Row(children: [
+            if (screen != 'HomeScreen' || actions.isNotEmpty) ...[Center(child: Container(width: 1.5, height: 40, color: Colors.white.withOpacity(.5))), const SizedBox(width: 15)],
+            if (!Navigator.canPop(context)) Row(children: [
               IconButton(
                 splashRadius: 25,
+                tooltip: 'My Favorites',
+                icon: const Icon(Icons.favorite, size: 25, color: Colors.red),
+                onPressed: () => push(context, name: 'favs', widget: const FavScreen())
+              ),
+              const SizedBox(width: 15)
+            ]),
+            if (!Navigator.canPop(context)) Row(children: [
+              IconButton(
+                splashRadius: 25,
+                tooltip: 'My Profile',
                 icon: const Icon(Icons.person, size: 25, color: secondary),
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()))
+                onPressed: () => push(context, name: 'profile', widget: const ProfileScreen())
               ),
               const SizedBox(width: 15)
             ]),
             IconButton(
               splashRadius: 25,
-              icon: const Icon(Icons.power_settings_new, size: 25, color: logoLight),
+              tooltip: 'Logout',
+              icon: const Icon(Icons.power_settings_new, size: 25),
               onPressed: () async => showDialog(context: context, builder: (BuildContext context) => _buildLogoutDialog(context))
             )
           ]
@@ -129,7 +144,9 @@ class MyTheme {
     shape: RoundedRectangleBorder(side: BorderSide(color: borderColor), borderRadius: BorderRadius.circular(20))
   );
 
-  static push(BuildContext context, {required Widget widget, bool replace = false}) => (replace ? Navigator.pushReplacement : Navigator.push)(context, MaterialPageRoute(builder: (context) => widget));
+  static push(BuildContext context, {required Widget widget, String? name, bool replace = false}) => (replace ? Navigator.pushReplacement : Navigator.push)(
+    context, MaterialPageRoute(builder: (context) => widget, settings: RouteSettings(name: name))
+  );
 
   static showError(BuildContext context, {required String text}) => push(context, widget: ErrorPage(text: text));
 
@@ -163,7 +180,7 @@ class MyTheme {
             SharedPreferences preferences = await SharedPreferences.getInstance();
             preferences.remove('token').then((value) {
               // Go back to the first screen and replace it with LoginScreen
-              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.popUntil(context, (route) => route.isFirst);
               push(context, replace: true, widget: const LoginScreen());
               showSnackBar(context, text: 'You have been logged out successfully.');
             });
@@ -171,7 +188,7 @@ class MyTheme {
           child: const Text('Yes')
         )
       ),
-      SizedBox(width: 100, child: ElevatedButton(style: buttonStyle(), onPressed: () => Navigator.of(context).pop(), child: const Text('No')))
+      SizedBox(width: 100, child: ElevatedButton(style: buttonStyle(), onPressed: () => Navigator.pop(context), child: const Text('No')))
     ]
   );
 }

@@ -17,8 +17,7 @@ class _ErrorPageState extends State<ErrorPage> {
   @override
   void initState() {
     WidgetsFlutterBinding.ensureInitialized();
-    const orientations = [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp];
-    SystemChrome.setPreferredOrientations(orientations);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     super.initState();
   }
 
@@ -35,7 +34,7 @@ class _ErrorPageState extends State<ErrorPage> {
               children: [
                 LottieBuilder.asset('lottie/not_found.json', width: 250, height: 250),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width * .8,
+                  width: MediaQuery.sizeOf(context).width * .8,
                   child: Text(widget.text, textAlign: TextAlign.center, style: MyTheme.appText(size: 20, weight: FontWeight.bold))
                 )
               ]
@@ -55,7 +54,7 @@ class _ErrorPageState extends State<ErrorPage> {
                 )
               ),
               child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.pop(context),
                 style: MyTheme.buttonStyle(bgColor: Colors.transparent, borderColor: Colors.transparent),
                 child: Text('Go Back', style: MyTheme.appText(size: 16))
               )

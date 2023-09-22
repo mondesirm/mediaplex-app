@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 
-import 'package:mediaplex/common/api.dart';
+import 'package:mediaplex/utils/api.dart';
 import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/home/models/fav_model.dart';
 import 'package:mediaplex/home/models/channel_model.dart';

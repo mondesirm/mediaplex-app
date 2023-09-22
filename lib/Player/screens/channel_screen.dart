@@ -14,7 +14,7 @@ class ChannelScreen extends StatefulWidget {
 
   final bool isLive;
   final Widget topWidget;
-  final List<ChannelModel> models;
+  final List<Channel> models;
 
   @override
   State<ChannelScreen> createState() => _ChannelScreenState();
@@ -52,7 +52,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
             children: List.generate(widget.models.length, (index) => AnimationConfiguration.staggeredList(
               position: index,
               duration: const Duration(seconds: 1, milliseconds: 500),
-              // columnCount: MediaQuery.of(context).size.width > 1000 ? 4 : 2,
+              // columnCount: MediaQuery.sizeOf(context).width > 1000 ? 4 : 2,
               child: SlideAnimation(
                 horizontalOffset: 80,
                 child: FadeInAnimation(
@@ -77,7 +77,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
     );
   }
 
-  Widget _buildPopupDialog(BuildContext context, {required ChannelModel model}) => AlertDialog(
+  Widget _buildPopupDialog(BuildContext context, {required Channel model}) => AlertDialog(
     backgroundColor: MyTheme.surface,
     actionsAlignment: MainAxisAlignment.spaceBetween,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -98,23 +98,18 @@ class _ChannelScreenState extends State<ChannelScreen> {
         child: ElevatedButton(
           style: MyTheme.buttonStyle(),
           onPressed: () {
-            service.addToFav(context: context, model: model).then((value) {
-              final snackBar = SnackBar(backgroundColor: MyTheme.lightBg, content: Text(value, style: MyTheme.appText(size: 12, weight: FontWeight.w500)));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              Navigator.of(context).pop();
-            });
+            service.addFav(context, model: model).then((value) {
+              MyTheme.showSnackBar(context, text: value);
+              // Update like button
+              // setState(() => widget.models.firstWhere((_) => _.url == model.url).isFav = true);
+            }).catchError((error) {
+              MyTheme.showError(context, text: error.toString());
+            }).whenComplete(() => Navigator.pop(context));
           },
           child: const Text('Yes')
         )
       ),
-      SizedBox(
-        width: 100,
-        child: ElevatedButton(
-          onPressed: () => Navigator.of(context).pop(),
-          style: MyTheme.buttonStyle(),
-          child: const Text('No')
-        )
-      )
+      SizedBox(width: 100, child: ElevatedButton(onPressed: () => Navigator.pop(context), style: MyTheme.buttonStyle(), child: const Text('No')))
     ]
   );
 }

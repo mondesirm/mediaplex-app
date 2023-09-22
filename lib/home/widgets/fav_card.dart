@@ -44,7 +44,7 @@ class _FavCardState extends State<FavCard> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              MediaQuery.of(context).size.width > 500 ? SizedBox(
+              MediaQuery.sizeOf(context).width > 500 ? SizedBox(
                 width: 100,
                 height: 40,
                 child: ElevatedButton(

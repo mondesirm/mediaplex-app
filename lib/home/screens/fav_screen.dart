@@ -37,8 +37,9 @@ class _FavScreenState extends State<FavScreen> {
       actions: [
         IconButton(
           splashRadius: 25,
+          tooltip: 'Sort Order',
           onPressed: () => setState(() => reverse = !reverse),
-          icon: Icon(reverse ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded, color: MyTheme.logoLight)
+          icon: Icon(reverse ? Icons.keyboard_double_arrow_up : Icons.keyboard_double_arrow_down, color: MyTheme.logoLight)
         )
       ],
       child: Expanded(child: Text('My Favorites', overflow: TextOverflow.ellipsis, style: MyTheme.appText()))
@@ -107,12 +108,12 @@ class _FavScreenState extends State<FavScreen> {
               setState(() => models.remove(model));
             }).catchError((error) {
               MyTheme.showError(context, text: error.toString());
-            }).whenComplete(() => Navigator.of(context).pop());
+            }).whenComplete(() => Navigator.pop(context));
           },
           child: const Text('Yes')
         )
       ),
-      SizedBox(width: 100, child: ElevatedButton(style: MyTheme.buttonStyle(), onPressed: () => Navigator.of(context).pop(), child: const Text('No')))
+      SizedBox(width: 100, child: ElevatedButton(style: MyTheme.buttonStyle(), onPressed: () => Navigator.pop(context), child: const Text('No')))
     ]
   );
 }

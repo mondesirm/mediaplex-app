@@ -1,4 +1,3 @@
-// ignore_for_file: must_be_immutable, unused_local_variable, avoid_print, non_constant_identifier_names
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -7,9 +6,10 @@ import 'package:mediaplex/home/models/channel_model.dart';
 import 'package:mediaplex/player/screens/channel_screen.dart';
 
 class SelectScreen extends StatefulWidget {
-  SelectScreen({super.key, required this.topWidget, required this.models});
-  Widget topWidget;
-  List<ChannelModel> models;
+  const SelectScreen({super.key, required this.topWidget, required this.models});
+
+  final Widget topWidget;
+  final List<Channel> models;
 
   @override
   State<SelectScreen> createState() => _SelectScreenState();
@@ -35,8 +35,8 @@ class _SelectScreenState extends State<SelectScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * .5,
+                width: MediaQuery.sizeOf(context).width,
+                height: MediaQuery.sizeOf(context).height * .5,
                 child: CarouselSlider.builder(
                   itemCount: uniqueCountries.length,
                   carouselController: buttonCarouselController,
@@ -52,16 +52,16 @@ class _SelectScreenState extends State<SelectScreen> {
                   ),
                   itemBuilder: ((context, index, realIndex) {
                     int count = 0;
-                    String country_name = '';
+                    String countryName = '';
 
-                    List<ChannelModel> countryChannels = widget.models.where((e) {
+                    List<Channel> countryChannels = widget.models.where((e) {
                       return e.country!.isNotEmpty ? e.country!.toLowerCase() == uniqueCountries[index] : false;
                     }).toList();
 
                     if (countryChannels.isNotEmpty) {
-                      for (ChannelModel model in countryChannels) {
+                      for (Channel model in countryChannels) {
                         if (model.country!.isNotEmpty) {
-                          country_name = model.country!;
+                          countryName = model.country!;
                           break;
                         }
                       }
@@ -79,7 +79,7 @@ class _SelectScreenState extends State<SelectScreen> {
                             children: [
                               widget.topWidget,
                               const SizedBox(width: 5),
-                              Text(country_name, style: MyTheme.appText(size: 14, weight: FontWeight.w500, color: MyTheme.logoDark))
+                              Text(countryName, style: MyTheme.appText(size: 14, weight: FontWeight.w500, color: MyTheme.logoDark))
                             ]
                           )
                         )))),
@@ -102,7 +102,7 @@ class _SelectScreenState extends State<SelectScreen> {
                             SizedBox(
                               width: 500,
                               child: Text(
-                                country_name,
+                                countryName,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
                                 style: MyTheme.appText(size: 20)

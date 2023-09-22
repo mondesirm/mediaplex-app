@@ -16,8 +16,8 @@ class ApiService {
   Uri getUri(String endpoint, {bool isDb = false}) => Uri.parse((isDb ? MyTheme.dbURL : MyTheme.iptvURl) + endpoint);
 
   Future<Map<String, String>> getHeaders() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String token = sharedPreferences.getString('token').toString();
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String token = preferences.getString('token').toString();
     return { 'Authorization': 'Bearer $token', 'Content-Type': 'application/json' };
   }
 

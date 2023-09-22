@@ -26,22 +26,22 @@ class Profile {
 class ProfileUpdate {
   String? email;
   String? username;
-  String? oldPassword;
   String? newPassword;
+  String? oldPassword;
 
   ProfileUpdate({this.email, this.username, this.oldPassword, this.newPassword});
 
   ProfileUpdate.fromJson(Map<String, dynamic> json) {
     email = json['email'];
     username = json['username'];
-    oldPassword = json['old_password'];
     newPassword = json['new_password'];
+    oldPassword = json['old_password'];
   }
 
   Map<String, dynamic> toJson() => {
     'email': email,
     'username': username,
-    'old_password': oldPassword,
-    'new_password': newPassword
+    'new_password': newPassword,
+    'old_password': oldPassword
   };
 }

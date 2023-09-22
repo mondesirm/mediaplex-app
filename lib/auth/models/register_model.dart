@@ -1,11 +1,11 @@
-class RegisterModel {
+class Register {
   String? email;
   String? password;
   String? username;
 
-  RegisterModel({this.email, this.password, this.username});
+  Register({this.email, this.password, this.username});
 
-  RegisterModel.fromJson(Map<String, dynamic> json) {
+  Register.fromJson(Map<String, dynamic> json) {
     email = json['email'];
     password = json['password'];
     username = json['username'];

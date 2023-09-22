@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/home/models/category_card_model.dart';
 
-class ShowCard extends StatefulWidget {
-  const ShowCard({super.key, required this.model});
+class CategoryCard extends StatefulWidget {
+  const CategoryCard({super.key, required this.model});
 
   final CategoryCardModel model;
 
   @override
-  State<ShowCard> createState() => _ShowCardState();
+  State<CategoryCard> createState() => _CategoryCardState();
 }
 
-class _ShowCardState extends State<ShowCard> {
+class _CategoryCardState extends State<CategoryCard> {
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 20),
+    padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
       color: MyTheme.surface,
       borderRadius: BorderRadius.circular(20),
