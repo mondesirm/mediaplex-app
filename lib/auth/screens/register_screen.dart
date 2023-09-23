@@ -28,7 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     resizeToAvoidBottomInset: true,
     appBar: AppBar(
       flexibleSpace: Container(decoration: MyTheme.boxDecoration()),
-      title: SvgPicture.asset('logo.svg', height: 20, placeholderBuilder: (context) => MyTheme.loadingAnimation()),
+      title: SvgPicture.asset('logo.svg', height: 20, placeholderBuilder: (context) => SizedBox(width: 154, child: MyTheme.loadingAnimation())),
     ),
     body: Container(
       padding: const EdgeInsets.all(30),

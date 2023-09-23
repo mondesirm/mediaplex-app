@@ -16,17 +16,17 @@ class FavScreen extends StatefulWidget {
 }
 
 class _FavScreenState extends State<FavScreen> {
-  bool reverse = true;
-  List<Fav> models = [];
+  bool _reverse = true;
+  List<Fav> _models = [];
   late Future<List<Fav>> _favorites;
-  HomeService service = HomeService();
+  final HomeService _service = HomeService();
 
   @override
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-    _favorites = service.fetchFavs(context);
+    _favorites = _service.fetchFavs(context);
   }
 
   @override
@@ -38,8 +38,8 @@ class _FavScreenState extends State<FavScreen> {
         IconButton(
           splashRadius: 25,
           tooltip: 'Sort Order',
-          onPressed: () => setState(() => reverse = !reverse),
-          icon: Icon(reverse ? Icons.keyboard_double_arrow_up : Icons.keyboard_double_arrow_down, color: MyTheme.logoLight)
+          onPressed: () => setState(() => _reverse = !_reverse),
+          icon: Icon(_reverse ? Icons.keyboard_double_arrow_up : Icons.keyboard_double_arrow_down, color: MyTheme.logoLight)
         )
       ],
       child: Expanded(child: Text('My Favorites', overflow: TextOverflow.ellipsis, style: MyTheme.appText()))
@@ -53,16 +53,16 @@ class _FavScreenState extends State<FavScreen> {
           if (snapshot.hasError) return Center(child: Text('Something went wrong...\nPlease try again later.', textAlign: TextAlign.center, style: MyTheme.appText(size: 20)));
 
           if (snapshot.hasData) {
-            models = snapshot.data!;
+            _models = snapshot.data!;
 
-            return models.isEmpty
+            return _models.isEmpty
               ? Center(child: Text('No favorites found', style: MyTheme.appText(size: 25, weight: FontWeight.bold)))
               : Align(
                 alignment: Alignment.topLeft,
                 child: AnimationLimiter(child: ListView.builder(
-                  reverse: reverse,
+                  reverse: _reverse,
                   shrinkWrap: true,
-                  itemCount: models.length,
+                  itemCount: _models.length,
                   scrollDirection: Axis.vertical,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: ((context, index) => AnimationConfiguration.staggeredList(
@@ -72,8 +72,8 @@ class _FavScreenState extends State<FavScreen> {
                       horizontalOffset: 80,
                       child: FadeInAnimation(child: FavCard(
                         index: index + 1,
-                        model: models[index],
-                        onDelete: () => showDialog(context: context, builder: (BuildContext context) => _buildPopupDialog(context, model: models[index]))
+                        model: _models[index],
+                        onDelete: () => showDialog(context: context, builder: (BuildContext context) => _buildPopupDialog(context, model: _models[index]))
                       ))
                     )
                   ))
@@ -103,9 +103,9 @@ class _FavScreenState extends State<FavScreen> {
         child: ElevatedButton(
           style: MyTheme.buttonStyle(),
           onPressed: () {
-            service.deleteFav(context, model: model).then((value) {
+            _service.deleteFav(context, model: model).then((value) {
               MyTheme.showSnackBar(context, text: value);
-              setState(() => models.remove(model));
+              setState(() => _models.remove(model));
             }).catchError((error) {
               MyTheme.showError(context, text: error.toString());
             }).whenComplete(() => Navigator.pop(context));

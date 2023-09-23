@@ -18,17 +18,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Widget home = const Scaffold();
+  Widget _home = const Scaffold();
 
   void switchHome() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String? session = preferences.getString('token');
-    setState(() => home = session == null ? const LoginScreen() : const HomeScreen());
+    setState(() => _home = session == null ? const LoginScreen() : const HomeScreen());
   }
 
   @override
   void initState() { switchHome(); super.initState(); }
 
   @override
-  Widget build(BuildContext context) => MaterialApp(home: home, title: 'mediaplex', debugShowCheckedModeBanner: false);
+  Widget build(BuildContext context) => MaterialApp(home: _home, title: 'mediaplex', debugShowCheckedModeBanner: false);
 }

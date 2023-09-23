@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:animate_do/animate_do.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'models/channel_model.dart';
 import 'service/home_service.dart';
@@ -21,27 +21,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Timer timer;
-  // late String? lastScreen;
-  HomeService service = HomeService();
   late Future<List<Channel>> _channels;
+  final HomeService _service = HomeService();
   String time = DateFormat.jm().format(DateTime.now()).toString();
   String date = DateFormat.yMMMd().format(DateTime.now()).toString();
-
-  // void init() async {
-  //   SharedPreferences preferences = await SharedPreferences.getInstance();
-  //   lastScreen = preferences.getString('lastScreen');
-  //   if (lastScreen == null) preferences.setString('lastScreen', 'HomeScreen');
-  //   if (lastScreen != 'HomeScreen') MyTheme.push(context, widget: lastScreen == 'FavScreen' ? const FavScreen() : const ProfileScreen());
-  // }
 
   @override
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-    _channels = service.fetchChannels(context);
+    _channels = _service.fetchChannels(context);
     timer = Timer.periodic(const Duration(seconds: 1), (timer) => _update());
-    // init();
   }
 
   void _update() {
@@ -86,21 +77,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   categoryCards[index].count = index != 0 ? models.length : snapshot.data!.length;
 
-                  return FadeInUp(child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: InkWell(
-                      autofocus: index == 0,
-                      onTap: () => MyTheme.push(
-                        context,
-                        name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}/all',
-                        widget: ChannelScreen(topWidget: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
-                      ),
-                      onLongPress: () => MyTheme.push(
-                        context,
-                        name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}',
-                        widget: SelectScreen(topWidget: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
-                      ),
-                      child: CategoryCard(model: categoryCards[index])
+                  return AnimationLimiter(child: AnimationConfiguration.staggeredGrid(
+                    position: index,
+                    duration: const Duration(milliseconds: 500),
+                    columnCount: MediaQuery.sizeOf(context).width > 525 ? 3 : MediaQuery.sizeOf(context).width > 345 ? 2 : 1,
+                    child: SlideAnimation(
+                      verticalOffset: orientation == Orientation.landscape ? 80 : 0,
+                      horizontalOffset: orientation == Orientation.landscape ? 0 : 80,
+                      child: FadeInAnimation(child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: InkWell(
+                          autofocus: index == 0,
+                          onTap: () => MyTheme.push(
+                            context,
+                            name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}/all',
+                            widget: ChannelScreen(topWidget: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
+                          ),
+                          onLongPress: () => MyTheme.push(
+                            context,
+                            name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}',
+                            widget: SelectScreen(topWidget: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
+                          ),
+                          child: CategoryCard(model: categoryCards[index])
+                        )
+                      ))
                     )
                   ));
                 })

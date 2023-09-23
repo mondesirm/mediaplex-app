@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               SvgPicture.asset(
                 'logo.svg',
-                placeholderBuilder: (context) => MyTheme.loadingAnimation(),
+                placeholderBuilder: (context) => SizedBox(height: 55, child: MyTheme.loadingAnimation()),
                 height: MediaQuery.sizeOf(context).width > 500 ? 50 : MediaQuery.sizeOf(context).width * .1
               ),
               const SizedBox(height: 20),
