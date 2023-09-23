@@ -40,10 +40,10 @@ dependencies:
   chewie: ^1.5.0
   lottie: ^2.1.0
   animate_do: ^3.1.2
-  either_dart: ^0.3.0
+  either_dart: ^1.0.0
   flutter_svg: ^2.0.7
   google_fonts: ^4.0.4
-  video_player: ^2.7.1
+  video_player: ^2.7.2
   better_player: ^0.0.83
   carousel_slider: ^4.2.1
   cupertino_icons: ^1.0.2
