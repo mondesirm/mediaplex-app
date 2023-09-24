@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mediaplex/home/screens/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'error_screen.dart';
 import 'package:mediaplex/auth/screens/login_screen.dart';
-import 'package:mediaplex/home/screens/fav_screen.dart';
+import 'package:mediaplex/home/screens/account_screen.dart';
+import 'package:mediaplex/home/screens/library_screen.dart';
 
 class MyTheme {
   static const Color darkBg = Color(0xff1A1726);
@@ -76,18 +76,18 @@ class MyTheme {
             if (!Navigator.canPop(context)) Row(children: [
               IconButton(
                 splashRadius: 25,
-                tooltip: 'My Favorites',
-                icon: const Icon(Icons.favorite, size: 25, color: Colors.red),
-                onPressed: () => push(context, name: 'favs', widget: const FavScreen())
+                tooltip: 'My Library',
+                icon: const Icon(Icons.video_library, size: 25, color: secondary),
+                onPressed: () => push(context, name: 'library', widget: const LibraryScreen())
               ),
               const SizedBox(width: 15)
             ]),
             if (!Navigator.canPop(context)) Row(children: [
               IconButton(
                 splashRadius: 25,
-                tooltip: 'My Profile',
-                icon: const Icon(Icons.person, size: 25, color: secondary),
-                onPressed: () => push(context, name: 'profile', widget: const ProfileScreen())
+                tooltip: 'My Account',
+                icon: const Icon(Icons.account_circle, size: 25, color: secondary),
+                onPressed: () => push(context, name: 'account', widget: const AccountScreen())
               ),
               const SizedBox(width: 15)
             ]),
