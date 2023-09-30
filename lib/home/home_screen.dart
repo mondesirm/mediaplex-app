@@ -9,8 +9,8 @@ import 'service/home_service.dart';
 import 'widgets/category_card.dart';
 import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/utils/constants.dart';
-import 'package:mediaplex/player/screens/select_screen.dart';
-import 'package:mediaplex/player/screens/channel_screen.dart';
+import 'package:mediaplex/player/screens/channels_screen.dart';
+import 'package:mediaplex/player/screens/countries_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(time, style: MyTheme.appText()),
-          Text(date, style: MyTheme.appText(size: 12, weight: FontWeight.w500, color: Colors.grey))
+          Text(date, style: MyTheme.appText(size: 12, color: Colors.grey, weight: FontWeight.w500))
         ]
       )),
       body: Container(
@@ -64,8 +64,8 @@ class _HomeScreenState extends State<HomeScreen> {
             if (snapshot.hasData) {
               return OrientationBuilder(builder: (context, orientation) => GridView.count(
                 physics: const BouncingScrollPhysics(),
-                crossAxisCount: MediaQuery.sizeOf(context).width > 525 ? 3 : MediaQuery.sizeOf(context).width > 345 ? 2 : 1,
                 scrollDirection: orientation == Orientation.landscape ? Axis.horizontal : Axis.vertical,
+                crossAxisCount: MediaQuery.sizeOf(context).width > 525 ? 3 : MediaQuery.sizeOf(context).width > 345 ? 2 : 1,
                 children: List.generate(categoryCards.length, (index) {
                   List<Channel> models = [];
 
@@ -91,12 +91,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () => MyTheme.push(
                             context,
                             name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}/all',
-                            widget: ChannelScreen(topWidget: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
+                            widget: ChannelScreen(title: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
                           ),
                           onLongPress: () => MyTheme.push(
                             context,
                             name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}',
-                            widget: SelectScreen(topWidget: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
+                            widget: CountriesScreen(title: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
                           ),
                           child: CategoryCard(model: categoryCards[index])
                         )

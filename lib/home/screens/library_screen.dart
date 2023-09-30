@@ -66,23 +66,23 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
         ]
       ),
       actions: [
-        if (_tabIndex == 0) IconButton(
+        if (_tabIndex == 0 && _history.isNotEmpty) IconButton(
           splashRadius: 25,
           tooltip: 'Clear History',
-          onPressed: _history.isEmpty ? null : _clearHistory,
-          icon: Icon(Icons.clear_all, color: Colors.red.withOpacity(_history.isEmpty ? .5 : 1))
+          onPressed: _clearHistory,
+          icon: const Icon(Icons.clear_all, color: Colors.red)
         ),
         if (_tabIndex == 1) IconButton(
           splashRadius: 25,
-          tooltip: 'Sort Order',
           onPressed: () => setState(() => _reverse = !_reverse),
-          icon: Icon(_reverse ? Icons.keyboard_double_arrow_up : Icons.keyboard_double_arrow_down, color: MyTheme.logoLight)
+          tooltip: _reverse ? 'Sort Older First' : 'Sort Newer First',
+          icon: Icon(_reverse ? Icons.keyboard_double_arrow_down : Icons.keyboard_double_arrow_up, color: MyTheme.logoLight)
         ),
         IconButton(
           splashRadius: 25,
           tooltip: 'Upload Media',
-          onPressed: () => MyTheme.showSnackBar(context, text: 'Coming soon!'),
-          icon: const Icon(Icons.upload_file, color: MyTheme.logoLight)
+          icon: const Icon(Icons.upload_file, color: MyTheme.logoLight),
+          onPressed: () => MyTheme.showSnackBar(context, text: 'Coming soon!')
         )
       ],
       child: Expanded(child: Text('My Library', overflow: TextOverflow.ellipsis, style: MyTheme.appText()))
@@ -161,7 +161,14 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                             child: FadeInAnimation(child: FavCard(
                               index: index + 1,
                               model: _models[index],
-                              onDelete: () => showDialog(context: context, builder: (BuildContext context) => _removeFavoriteDialog(context, model: _models[index]))
+                              onDelete: () => MyTheme.showAlertDialog(context, title: 'Remove Favorite', text: 'Do you want to remove ${_models[index].name} from your favorites?', onConfirm: () {
+                                _service.deleteFav(context, model: _models[index]).then((value) {
+                                  MyTheme.showSnackBar(context, text: value);
+                                  setState(() => _models.remove(_models[index]));
+                                }).catchError((error) {
+                                  MyTheme.showError(context, text: error.toString());
+                                });
+                              })
                             ))
                           )
                         ))
@@ -179,37 +186,5 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
         )
       ]
     )
-  );
-
-  Widget _removeFavoriteDialog(BuildContext context, {required Fav model}) => AlertDialog(
-    backgroundColor: MyTheme.surface,
-    actionsAlignment: MainAxisAlignment.spaceBetween,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-    actionsPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-    content: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text('Do you want to remove this channel from your favorites?', style: MyTheme.appText(weight: FontWeight.w500))
-      ]
-    ),
-    actions: <Widget>[
-      SizedBox(
-        width: 100,
-        child: ElevatedButton(
-          style: MyTheme.buttonStyle(),
-          onPressed: () {
-            _service.deleteFav(context, model: model).then((value) {
-              MyTheme.showSnackBar(context, text: value);
-              setState(() => _models.remove(model));
-            }).catchError((error) {
-              MyTheme.showError(context, text: error.toString());
-            }).whenComplete(() => Navigator.pop(context));
-          },
-          child: const Text('Yes')
-        )
-      ),
-      SizedBox(width: 100, child: ElevatedButton(style: MyTheme.buttonStyle(), onPressed: () => Navigator.pop(context), child: const Text('No')))
-    ]
   );
 }

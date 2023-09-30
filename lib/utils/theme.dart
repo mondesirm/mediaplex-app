@@ -62,7 +62,7 @@ class MyTheme {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Add a SizedBox after every element to add spacing between them
-            ...actions.map((e) => Row(children: [e, const SizedBox(width: 15)])).toList(),
+            ...actions.map((_) => Row(children: [_, const SizedBox(width: 15)])).toList(),
             if (screen != 'HomeScreen') Row(children: [
               IconButton(
                 splashRadius: 25,
@@ -93,9 +93,17 @@ class MyTheme {
             ]),
             IconButton(
               splashRadius: 25,
-              tooltip: 'Logout',
+              tooltip: 'Log Out',
               icon: const Icon(Icons.power_settings_new, size: 25),
-              onPressed: () async => showDialog(context: context, builder: (BuildContext context) => _buildLogoutDialog(context))
+              onPressed: () async => showAlertDialog(context, title: 'Log Out', text: 'Are you sure you want to log out?', onConfirm: () async {
+                SharedPreferences preferences = await SharedPreferences.getInstance();
+                preferences.remove('token').then((value) {
+                  // Go back to the first screen and replace it with LoginScreen
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                  push(context, replace: true, widget: const LoginScreen());
+                  showSnackBar(context, text: 'You have been logged out successfully.');
+                });
+              })
             )
           ]
         )
@@ -144,13 +152,13 @@ class MyTheme {
     shape: RoundedRectangleBorder(side: BorderSide(color: borderColor), borderRadius: BorderRadius.circular(20))
   );
 
-  static push(BuildContext context, {required Widget widget, String? name, bool replace = false}) => (replace ? Navigator.pushReplacement : Navigator.push)(
+  static Future push(BuildContext context, {required Widget widget, String? name, bool replace = false}) => (replace ? Navigator.pushReplacement : Navigator.push)(
     context, MaterialPageRoute(builder: (context) => widget, settings: RouteSettings(name: name))
   );
 
-  static showError(BuildContext context, {required String text}) => push(context, widget: ErrorPage(text: text));
+  static Future showError(BuildContext context, {required String text}) => push(context, widget: ErrorPage(text: text));
 
-  static loadingAnimation() => LoadingAnimationWidget.fourRotatingDots(size: 30, color: MyTheme.logoLight);
+  static Widget loadingAnimation() => LoadingAnimationWidget.fourRotatingDots(size: 30, color: MyTheme.logoLight);
 
   static showSnackBar(BuildContext context, {required String text}) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     showCloseIcon: true,
@@ -159,36 +167,35 @@ class MyTheme {
     content: Text(text, style: MyTheme.appText(size: 12, weight: FontWeight.w500))
   ));
 
-  static Widget _buildLogoutDialog(BuildContext context) => AlertDialog(
+  static Future showAlertDialog(
+    BuildContext context, {
+    required String text,
+    required String title,
+    String cancel = 'Cancel',
+    String confirm = 'Confirm',
+    required Function() onConfirm
+  }) => showDialog(context: context, builder: (BuildContext context) => AlertDialog(
     backgroundColor: surface,
     actionsAlignment: MainAxisAlignment.spaceBetween,
+    title: Text(title, style: appText(weight: FontWeight.w600)),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     actionsPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
     content: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text('Are you sure you want to log out?', style: appText(weight: FontWeight.w500))
-      ]
+      children: [Text(text, style: appText(weight: FontWeight.w500))]
     ),
-    actions: <Widget>[
-      SizedBox(
-        width: 100,
-        child: ElevatedButton(
-          style: buttonStyle(),
-          onPressed: () async {
-            SharedPreferences preferences = await SharedPreferences.getInstance();
-            preferences.remove('token').then((value) {
-              // Go back to the first screen and replace it with LoginScreen
-              Navigator.popUntil(context, (route) => route.isFirst);
-              push(context, replace: true, widget: const LoginScreen());
-              showSnackBar(context, text: 'You have been logged out successfully.');
-            });
-          },
-          child: const Text('Yes')
-        )
+    actions: [
+      ElevatedButton(
+        onPressed: () => Navigator.pop(context),
+        style: buttonStyle(bgColor: Colors.redAccent),
+        child: Text(cancel, style: appText(color: surface, weight: FontWeight.w500))
       ),
-      SizedBox(width: 100, child: ElevatedButton(style: buttonStyle(), onPressed: () => Navigator.pop(context), child: const Text('No')))
+      ElevatedButton(
+        style: buttonStyle(bgColor: Colors.greenAccent),
+        onPressed: () { Navigator.pop(context); onConfirm(); },
+        child: Text(confirm, style: appText(color: surface, weight: FontWeight.w500))
+      )
     ]
-  );
+  ));
 }
