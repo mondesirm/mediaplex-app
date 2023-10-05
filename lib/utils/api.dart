@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:either_dart/either.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/utils/my_error.dart';
 
 class ApiService {
@@ -13,7 +13,7 @@ class ApiService {
 
   ApiService._internal();
 
-  Uri getUri(String endpoint, {bool isDb = false}) => Uri.parse((isDb ? MyTheme.dbURL : MyTheme.iptvURl) + endpoint);
+  Uri getUri(String endpoint, {bool isDb = false}) => Uri.parse((isDb ? dotenv.env['DB_URL'] : dotenv.env['IPTV_URL'])! + endpoint);
 
   Future<Map<String, String>> getHeaders() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();

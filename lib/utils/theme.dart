@@ -19,9 +19,6 @@ class MyTheme {
   static const Color logoLight = Color(0xffB16FF7);
   static const Color secondary = Color(0xff78cda1);
 
-  static const String dbURL = 'http://127.0.0.1:8000/';
-  static const String iptvURl = 'https://iptv-org.github.io/';
-
   static TextStyle appText({
     double size = 16,
     Color color = Colors.white,
