@@ -6,6 +6,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'error_screen.dart';
 import 'package:mediaplex/auth/screens/login_screen.dart';
+import 'package:mediaplex/player/models/media_model.dart';
 import 'package:mediaplex/home/screens/account_screen.dart';
 import 'package:mediaplex/home/screens/library_screen.dart';
 
@@ -68,7 +69,7 @@ class MyTheme {
                 splashRadius: 25,
                 tooltip: 'Go Home',
                 icon: const Icon(Icons.home_filled, size: 25),
-                onPressed: () => Navigator.popUntil(context, ((route) => route.isFirst))
+                onPressed: () => Navigator.popUntil(context, (route) => route.isFirst)
               ),
               const SizedBox(width: 15)
             ]),
@@ -115,8 +116,8 @@ class MyTheme {
     double radius = 0,
     List<Color> colors = const [darkBg, lightBg]
   }) => BoxDecoration(
-    borderRadius: BorderRadius.circular(radius),
-    gradient: LinearGradient(end: Alignment.centerRight, begin: Alignment.centerLeft, colors: colors)
+    gradient: LinearGradient(colors: colors),
+    borderRadius: BorderRadius.circular(radius)
   );
 
   static InputDecoration inputDecoration({
@@ -198,4 +199,38 @@ class MyTheme {
       )
     ]
   ));
+
+  static Future showImageDialog(BuildContext context, {required Media image}) => showDialog(
+    context: context,
+    builder: (context) => Dialog(
+      backgroundColor: Colors.transparent,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Image.network(image.url!, fit: BoxFit.cover)
+      )
+    )
+  );
+
+  static Future showInputDialog(BuildContext context, {
+    String label = 'Search',
+    IconData icon = Icons.search,
+    required TextEditingController controller,
+    List<String> autofillHints = const ['search'],
+    TextInputAction textInputAction = TextInputAction.search
+  }) => showDialog(
+    context: context,
+    builder: (context) => Dialog(
+      backgroundColor: Colors.transparent,
+      child: TextFormField(
+        autofocus: true,
+        controller: controller,
+        autofillHints: autofillHints,
+        textInputAction: textInputAction,
+        keyboardType: TextInputType.emailAddress,
+        onFieldSubmitted: (value) => textInputAction,
+        style: MyTheme.appText(weight: FontWeight.normal),
+        decoration: MyTheme.inputDecoration(fontSize: 15, hint: label, prefixIcon: icon)
+      )
+    )
+  );
 }

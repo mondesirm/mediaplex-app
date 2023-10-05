@@ -26,7 +26,7 @@ class HomeService {
         return _;
       });
 
-      return response.map((e) => Channel.fromJson(e)).toList();
+      return response.map(Channel.fromJson).toList();
     }
   }
 
@@ -36,7 +36,7 @@ class HomeService {
     if (response.isLeft) {
       MyTheme.showError(context, text: response.left.message!);
       return [];
-    } else { return response.right.map((e) => Fav.fromJson(e)).toList(); }
+    } else { return response.right.map(Fav.fromJson).toList(); }
   }
 
   Future<String> deleteFav(BuildContext context, {required Fav model}) async {

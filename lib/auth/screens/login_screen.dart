@@ -38,83 +38,80 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: const EdgeInsets.all(30),
       decoration: MyTheme.boxDecoration(),
       child: Stack(children: [
-        Align(
-          alignment: Alignment.center,
-          child: SingleChildScrollView(child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'logo.svg',
-                placeholderBuilder: (context) => SizedBox(height: 55, child: MyTheme.loadingAnimation()),
-                height: MediaQuery.sizeOf(context).width > 500 ? 50 : MediaQuery.sizeOf(context).width * .1
-              ),
-              const SizedBox(height: 20),
-              Text('Enter your credentials to continue', style: MyTheme.appText(weight: FontWeight.w500)),
-              const SizedBox(height: 40),
-              SizedBox(
-                width: MediaQuery.sizeOf(context).width * .7,
-                child: Form(
-                  key: _formKey,
-                  child: Column(children: [
-                    TextFormField(
-                      autofocus: true,
-                      controller: _email,
-                      autofillHints: const ['Email'],
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.emailAddress,
-                      onFieldSubmitted: (value) => TextInputAction.next,
-                      style: MyTheme.appText(weight: FontWeight.normal),
-                      decoration: MyTheme.inputDecoration(fontSize: 15, hint: 'Email Address', prefixIcon: Icons.mail),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'Email address is required.';
-                        if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) return 'Email address is invalid.';
-                        return null;
-                      }
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      obscureText: true,
-                      controller: _password,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (value) => TextInputAction.done,
-                      style: MyTheme.appText(weight: FontWeight.normal),
-                      decoration: MyTheme.inputDecoration(fontSize: 15, hint: 'Password', prefixIcon: Icons.lock),
-                      validator: (value) {
-                      if (value == null || value.isEmpty) return 'Password is required.';
-                      if (value.length < 8) return 'Password should be at least 8 characters long.';
+        Align(child: SingleChildScrollView(child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              'logo.svg',
+              placeholderBuilder: (context) => SizedBox(height: 55, child: MyTheme.loadingAnimation()),
+              height: MediaQuery.sizeOf(context).width > 500 ? 50 : MediaQuery.sizeOf(context).width * .1
+            ),
+            const SizedBox(height: 20),
+            Text('Enter your credentials to continue', style: MyTheme.appText(weight: FontWeight.w500)),
+            const SizedBox(height: 40),
+            SizedBox(
+              width: MediaQuery.sizeOf(context).width * .7,
+              child: Form(
+                key: _formKey,
+                child: Column(children: [
+                  TextFormField(
+                    autofocus: true,
+                    controller: _email,
+                    autofillHints: const ['email'],
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.emailAddress,
+                    onFieldSubmitted: (value) => TextInputAction.next,
+                    style: MyTheme.appText(weight: FontWeight.normal),
+                    decoration: MyTheme.inputDecoration(fontSize: 15, hint: 'Email Address', prefixIcon: Icons.mail),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'Email address is required.';
+                      if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) return 'Email address is invalid.';
                       return null;
                     }
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      height: 50,
-                      width: MediaQuery.sizeOf(context).width,
-                      decoration: MyTheme.boxDecoration(radius: 30, colors: [MyTheme.logoDark, MyTheme.logoLight.withOpacity(0.7)]),
-                      child: ElevatedButton(
-                        style: MyTheme.buttonStyle(bgColor: Colors.transparent, borderColor: Colors.transparent),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            setState(() => _isLoading = true);
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    obscureText: true,
+                    controller: _password,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (value) => TextInputAction.done,
+                    style: MyTheme.appText(weight: FontWeight.normal),
+                    decoration: MyTheme.inputDecoration(fontSize: 15, hint: 'Password', prefixIcon: Icons.lock),
+                    validator: (value) {
+                    if (value == null || value.isEmpty) return 'Password is required.';
+                    if (value.length < 8) return 'Password should be at least 8 characters long.';
+                    return null;
+                  }
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    height: 50,
+                    width: MediaQuery.sizeOf(context).width,
+                    decoration: MyTheme.boxDecoration(radius: 30, colors: [MyTheme.logoDark, MyTheme.logoLight.withOpacity(0.7)]),
+                    child: ElevatedButton(
+                      style: MyTheme.buttonStyle(bgColor: Colors.transparent, borderColor: Colors.transparent),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          setState(() => _isLoading = true);
 
-                            _service.login(context, model: Login(email: _email.text, password: _password.text)).then((value) {
-                              if (value is SessionModel) MyTheme.push(context, replace: true, widget: const HomeScreen());
-                            }).catchError((error) {
-                              MyTheme.showSnackBar(context, text: 'Something went wrong... Please try again later.');
-                            }).whenComplete(() => setState(() => _isLoading = false));
-                          }
-                        },
-                        child: _isLoading
-                          ? Center(child: LoadingAnimationWidget.staggeredDotsWave(size: 20, color: Colors.white))
-                          : Text('Sign In', style: MyTheme.appText())
-                      )
+                          _service.login(context, model: Login(email: _email.text, password: _password.text)).then((value) {
+                            if (value is SessionModel) MyTheme.push(context, replace: true, widget: const HomeScreen());
+                          }).catchError((error) {
+                            MyTheme.showSnackBar(context, text: 'Something went wrong... Please try again later.');
+                          }).whenComplete(() => setState(() => _isLoading = false));
+                        }
+                      },
+                      child: _isLoading
+                        ? Center(child: LoadingAnimationWidget.staggeredDotsWave(size: 20, color: Colors.white))
+                        : Text('Sign In', style: MyTheme.appText())
                     )
-                  ])
-                )
+                  )
+                ])
               )
-            ]
-          ))
-        ),
+            )
+          ]
+        ))),
         Align(
           alignment: Alignment.bottomCenter,
           child: Row(

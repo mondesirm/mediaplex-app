@@ -67,15 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 scrollDirection: orientation == Orientation.landscape ? Axis.horizontal : Axis.vertical,
                 crossAxisCount: MediaQuery.sizeOf(context).width > 525 ? 3 : MediaQuery.sizeOf(context).width > 345 ? 2 : 1,
                 children: List.generate(categoryCards.length, (index) {
-                  List<Channel> models = [];
+                  List<Channel> channels = snapshot.data!.where((_) => _.categories!.isNotEmpty && _.categories!.contains(categoryCards[index].type.toLowerCase())).toList();
 
-                  for (Channel channels in snapshot.data!) {
-                    if (channels.categories!.isNotEmpty && channels.categories!.contains(categoryCards[index].type.toLowerCase())) {
-                      models.add(channels);
-                    }
-                  }
-
-                  categoryCards[index].count = index != 0 ? models.length : snapshot.data!.length;
+                  categoryCards[index].count = index != 0 ? channels.length : snapshot.data!.length;
 
                   return AnimationLimiter(child: AnimationConfiguration.staggeredGrid(
                     position: index,
@@ -91,12 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () => MyTheme.push(
                             context,
                             name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}/all',
-                            widget: ChannelScreen(title: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
+                            widget: ChannelsScreen(title: categoryCards[index].child, channels: index == 0 ? snapshot.data! : channels, showSearch: false)
                           ),
                           onLongPress: () => MyTheme.push(
                             context,
                             name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}',
-                            widget: CountriesScreen(title: categoryCards[index].child, models: index == 0 ? snapshot.data! : models)
+                            widget: CountriesScreen(title: categoryCards[index].child, channels: index == 0 ? snapshot.data! : channels)
                           ),
                           child: CategoryCard(model: categoryCards[index])
                         )

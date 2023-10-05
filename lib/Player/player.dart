@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,43 +18,67 @@ class Player extends StatefulWidget {
 }
 
 class _PlayerState extends State<Player> {
+  bool _looping = true;
   late String _fileName;
+  late List<dynamic> _history;
   late Future<void> _initialize;
-  late VideoPlayerController _controller;
-  // String test = 'https://cdn.002radio.com:3909/live/radio002live.m3u8';
-  // String test = 'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4';
+  late VideoPlayerController _videoPlayer;
+  String test = 'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4';
 
   void init() async {
     _fileName = widget.model.name ?? widget.model.url.split('/').last;
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.model.url));
-    _initialize = _controller.initialize();
-    _controller.setLooping(true);
+    _videoPlayer = VideoPlayerController.networkUrl(Uri.parse(test));
+    _initialize = _videoPlayer.initialize();
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.setString('lastPlayed', jsonEncode(widget.model));
+    _history = jsonDecode(preferences.getString('history') ?? '[]');
+
+    // Remove any duplicates and insert the current video at the top
+    _history.removeWhere((e) => e['url'] == widget.model.url);
+    _history.insert(0, widget.model.toJson());
+
+    // Remove any videos beyond 9 and save the list
+    if (_history.length > 9) _history.removeRange(9, _history.length);
+    preferences.setString('history', jsonEncode(_history));
   }
 
   @override
   void initState() { super.initState(); init(); }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() { _videoPlayer.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: MyTheme.appBar(context, screen: 'Player', child: Text('Playing $_fileName', style: MyTheme.appText())),
-    body: Container(
-      decoration: MyTheme.boxDecoration(),
-      child: Center(child: FutureBuilder(
-        future: _initialize,
-        builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done
-        ? AspectRatio(aspectRatio: _controller.value.aspectRatio, child: VideoPlayer(_controller))
-        : MyTheme.loadingAnimation()
+    appBar: MyTheme.appBar(
+      context,
+      screen: 'Player',
+      actions: [
+        IconButton(
+          splashRadius: 25,
+          tooltip: _looping ? 'Disable Looping' : 'Enable Looping',
+          onPressed: () => setState(() => _looping = !_looping),
+          icon: Icon(Icons.loop, color: _looping ? MyTheme.logoLight : Colors.grey)
+        )
+      ],
+      child: Align(child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Player', style: MyTheme.appText()),
+          Text(_fileName, style: MyTheme.appText(size: 12, color: Colors.grey, weight: FontWeight.w500))
+        ]
       ))
     ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () => setState(() { _controller.value.isPlaying ? _controller.pause() : _controller.play(); }),
-      child: Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow)
+    body: DecoratedBox(
+      decoration: MyTheme.boxDecoration(),
+      child: FutureBuilder(
+        future: _initialize,
+        builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done ? Chewie(controller: ChewieController(
+          autoPlay: true,
+          looping: _looping,
+          videoPlayerController: _videoPlayer
+        )) : Center(child: MyTheme.loadingAnimation())
+      )
     )
   );
 }

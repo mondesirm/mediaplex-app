@@ -23,6 +23,7 @@ class ChannelScreen extends StatefulWidget {
 
 class _ChannelScreenState extends State<ChannelScreen> {
   int _index = 0;
+  bool _autoplay = true;
   bool _listView = true;
   final PlayerService _service = PlayerService();
 
@@ -32,7 +33,13 @@ class _ChannelScreenState extends State<ChannelScreen> {
       context,
       screen: 'ChannelScreen',
       actions: [
-        IconButton(
+        if (widget.models.isNotEmpty) IconButton(
+          splashRadius: 25,
+          onPressed: () => setState(() => _autoplay = !_autoplay),
+          tooltip: _autoplay ? 'Disable Autoplay' : 'Enable Autoplay',
+          icon: Icon(Icons.motion_photos_auto, color: _autoplay ? MyTheme.logoLight : Colors.grey)
+        ),
+        if (widget.models.isNotEmpty) IconButton(
           splashRadius: 25,
           tooltip: _listView ? 'Grid View' : 'List View',
           onPressed: () => setState(() => _listView = !_listView),
@@ -46,16 +53,13 @@ class _ChannelScreenState extends State<ChannelScreen> {
       height: double.infinity,
       padding: const EdgeInsets.all(10),
       decoration: MyTheme.boxDecoration(),
-      child: widget.models.isEmpty ? Align(
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Lottie.asset('lottie/not_found.json', width: 180, height: 180),
-            Text('No channels found.', style: MyTheme.appText(size: 20))
-          ]
-        )
-      ) : OrientationBuilder(builder: (context, orientation) => _listView ? (orientation == Orientation.landscape ? Row.new : Column.new)(
+      child: widget.models.isEmpty ? Align(child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Lottie.asset('lottie/not_found.json', width: 180, height: 180),
+          Text('No channels found.', style: MyTheme.appText(size: 20))
+        ]
+      )) : OrientationBuilder(builder: (context, orientation) => _listView ? (orientation == Orientation.landscape ? Row.new : Column.new)(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -109,7 +113,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
             ),
             options: CarouselOptions(
               aspectRatio: 1,
-              autoPlay: true,
+              autoPlay: _autoplay,
               viewportFraction: .2,
               enlargeCenterPage: true,
               enableInfiniteScroll: false,
@@ -134,7 +138,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
             // widget.models[index]
             onFav: () => MyTheme.showAlertDialog(context, title: 'Add Favorite', text: 'Do you want to add ${widget.models[index].name} to your favorites?', onConfirm: () {
               _service.addFav(context, model: widget.models[index]).then((value) {
-                // setState(() => widget.models.firstWhere((_) => _.url == model.url).isFav = true);
+                // setState(() { widget.models.firstWhere((_) => _.url == widget.models[index].url).isFav = true; });
                 MyTheme.showSnackBar(context, text: value);
               }).catchError((error) {
                 MyTheme.showError(context, text: error.toString());

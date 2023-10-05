@@ -12,7 +12,7 @@ class Profile {
     id = json['id'];
     email = json['email'];
     username = json['username'];
-    favs = json['favs'] != null ? (json['favs'] as List).map((i) => Fav.fromJson(i)).toList() : null;
+    favs = json['favs'] ?? json['favs'].map(Fav.fromJson).toList();
   }
 
   Map<String, dynamic> toJson() => {

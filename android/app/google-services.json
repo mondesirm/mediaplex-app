@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "53243610812",
+    "project_id": "mondesirm-mediaplex",
+    "storage_bucket": "mondesirm-mediaplex.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53243610812:android:01992390c209ab3063b2b9",
+        "android_client_info": {
+          "package_name": "com.example.mediaplex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "53243610812-k3tk6e2h6d5087fcf8ustr5euklbm229.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6F-pzDUlEMbd0vjp08iY0pQBcPQh0LJQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "53243610812-k3tk6e2h6d5087fcf8ustr5euklbm229.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

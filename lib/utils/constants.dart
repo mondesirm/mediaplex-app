@@ -34,11 +34,11 @@ Map<String, IconData> categories = {
   'Other': Icons.outbond_sharp
 };
 
-List<CategoryCardModel> categoryCards = categories.keys.map((e) => CategoryCardModel(
-  type: e,
+List<CategoryCardModel> categoryCards = categories.keys.map((_) => CategoryCardModel(
+  type: _,
   count: 0,
-  data: categories[e]!,
-  child: e == 'Live'
+  data: categories[_]!,
+  child: _ == 'Live'
   ? Row(children: [
     Container(
       padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -47,7 +47,7 @@ List<CategoryCardModel> categoryCards = categories.keys.map((e) => CategoryCardM
     ),
     const SizedBox(width: 4),
     Text('TV', style: MyTheme.appText())
-  ]) : Text(e, overflow: TextOverflow.ellipsis, style: MyTheme.appText())
+  ]) : Text(_, overflow: TextOverflow.ellipsis, style: MyTheme.appText())
 )).toList();
 
 List<String> countryIcons = [

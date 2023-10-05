@@ -45,13 +45,7 @@ class _ErrorPageState extends State<ErrorPage> {
               height: 50,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
-                gradient: LinearGradient(
-                  stops: const [0, 1],
-                  end: Alignment.topRight,
-                  tileMode: TileMode.clamp,
-                  begin: Alignment.bottomLeft,
-                  colors: [MyTheme.logoDark, MyTheme.logoLight.withOpacity(.7)]
-                )
+                gradient: LinearGradient(colors: [MyTheme.logoDark, MyTheme.logoLight.withOpacity(.7)])
               ),
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
