@@ -49,10 +49,14 @@ class _FavCardState extends State<FavCard> {
                 height: 40,
                 child: ElevatedButton(
                   style: MyTheme.buttonStyle(),
-                  onPressed: () => MyTheme.push(context, widget: Player(model: widget.model)),
+                  onPressed: () => MyTheme.push(context, name: 'player', widget: Player(model: widget.model)),
                   child: const Text('Watch')
                 )
-              ) : IconButton(icon: const Icon(Icons.play_circle, color: MyTheme.logoLight), onPressed: () => MyTheme.push(context, widget: Player(model: widget.model))),
+              ) : IconButton(icon: const Icon(Icons.play_circle, color: MyTheme.logoLight), onPressed: () => MyTheme.push(
+                context,
+                name: 'player',
+                widget: Player(model: widget.model)
+              )),
               const SizedBox(width: 20),
               IconButton(onPressed: widget.onDelete, icon: const Icon(Icons.remove_circle, color: Colors.red))
             ]

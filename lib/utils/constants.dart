@@ -30,7 +30,7 @@ Map<String, IconData> categories = {
   'Sports': Icons.sports,
   'Travel': Icons.travel_explore,
   'Weather': Icons.sunny,
-  'XXX': Icons.no_adult_content,
+  'XXX': Icons.eighteen_up_rating,
   'Other': Icons.outbond_sharp
 };
 

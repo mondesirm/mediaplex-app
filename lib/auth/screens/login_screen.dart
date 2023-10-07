@@ -120,9 +120,10 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Text('No account yet? ', style: MyTheme.appText()),
               GestureDetector(
-                onTap: () => MyTheme.push(context, widget: const RegisterScreen()),
-                child: MouseRegion(cursor: SystemMouseCursors.click, child: Text('Register.', style: MyTheme.appText(color: MyTheme.logoDark)))
-              )
+                onTap: () => MyTheme.push(context, name: 'register', widget: const RegisterScreen()),
+                child: MouseRegion(cursor: SystemMouseCursors.click, child: Text('Register', style: MyTheme.appText(color: MyTheme.logoDark)))
+              ),
+              Text('.', style: MyTheme.appText())
             ]
           )
         )

@@ -13,8 +13,8 @@ class Channel {
     logo = json['logo'];
     name = json['name'];
     country = json['country'];
-    languages = json['languages']! != null ? json['languages'].cast<String>() : null;
-    categories = json['categories']! != null ? json['categories'].cast<String>() : null;
+    languages = json['languages'].cast<String>();
+    categories = json['categories'].cast<String>();
   }
 
   Map<String, dynamic> toJson() => {

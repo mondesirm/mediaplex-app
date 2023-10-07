@@ -30,8 +30,8 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
   int _tabIndex = 0;
   bool _reverse = true;
   List<Fav> _models = [];
+  List<Media> _files = [];
   late TabController _tab;
-  List<Media> _images = [];
   List<dynamic> _history = [];
   late Future<List<Fav>> _favorites;
   final ImagePicker _picker = ImagePicker();
@@ -159,7 +159,7 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
         tabs: const [
           Tab(text: 'History',  icon: Icon(Icons.history, color: MyTheme.secondary)),
           Tab(text: 'Favorites', icon: Icon(Icons.favorite, color: MyTheme.secondary)),
-          Tab(text: 'My Media', icon: Icon(Icons.star, color: MyTheme.secondary))
+          Tab(text: 'Files', icon: Icon(Icons.perm_media, color: MyTheme.secondary))
         ]
       ),
       actions: [
@@ -186,7 +186,7 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
           splashRadius: 25,
           tooltip: 'Upload (Gallery)',
           onPressed: () => _upload(UploadSource.gallery),
-          icon: const Icon(Icons.perm_media, color: MyTheme.logoLight)
+          icon: const Icon(Icons.drive_folder_upload, color: MyTheme.logoLight)
           // onPressed: () => MyTheme.showSnackBar(context, text: 'Coming soon!')
         )
       ],
@@ -209,7 +209,7 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
               return _history.isEmpty
                 ? Center(child: Text('No history found', style: MyTheme.appText(size: 25, weight: FontWeight.bold)))
                 : Column(children: [
-                  Text('Your last played items (max 9)', style: MyTheme.appText(size: 20, weight: FontWeight.w400)),
+                  Text('${_history.length} items (max 9)', style: MyTheme.appText(size: 20, weight: FontWeight.w400)),
                   Align(
                     alignment: Alignment.topLeft,
                     child: AnimationLimiter(child: ListView.builder(
@@ -248,7 +248,7 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                 return _models.isEmpty
                   ? Center(child: Text('No favorites found', style: MyTheme.appText(size: 25, weight: FontWeight.bold)))
                   : Column(children: [
-                    Text('Your ${_models.length} favorite${_models.length == 1 ? '' : 's'}', style: MyTheme.appText(size: 20, weight: FontWeight.w400)),
+                    Text('${_models.length} item${_models.length == 1 ? '' : 's'}', style: MyTheme.appText(size: 20, weight: FontWeight.w400)),
                     Align(
                       alignment: Alignment.topLeft,
                       child: AnimationLimiter(child: ListView.builder(
@@ -291,17 +291,17 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
               if (snapshot.hasError) return Center(child: Text('Something went wrong...\nPlease try again later.', textAlign: TextAlign.center, style: MyTheme.appText(size: 20)));
 
               if (snapshot.hasData) {
-                _images = snapshot.data!;
+                _files = snapshot.data!;
 
-                return _images.isEmpty
-                  ? Center(child: Text('No images found', style: MyTheme.appText(size: 25, weight: FontWeight.bold)))
+                return _files.isEmpty
+                  ? Center(child: Text('No media found', style: MyTheme.appText(size: 25, weight: FontWeight.bold)))
                   : Column(children: [
-                    Text('Your ${_images.length} image${_images.length == 1 ? '' : 's'}', style: MyTheme.appText(size: 20, weight: FontWeight.w400)),
+                    Text('${_files.length} item${_files.length == 1 ? '' : 's'}', style: MyTheme.appText(size: 20, weight: FontWeight.w400)),
                     Align(
                       alignment: Alignment.topLeft,
                       child: AnimationLimiter(child: ListView.builder(
                         shrinkWrap: true,
-                        itemCount: _images.length,
+                        itemCount: _files.length,
                         physics: const BouncingScrollPhysics(),
                         itemBuilder: (context, index) => AnimationConfiguration.staggeredList(
                           position: index,
@@ -314,15 +314,15 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                               child: ListTile(
                                 dense: false,
                                 textColor: Colors.white,
-                                title: Text(_images[index].path!),
-                                leading: Image.network(_images[index].url!),
-                                onTap: () => MyTheme.showImageDialog(context, image: _images[index]),
-                                subtitle: Text('${_images[index].createdAt} • ${_images[index].description}'),
-                                onLongPress: () => MyTheme.push(context, widget: Gallery(index: index, images: _images)),
+                                title: Text(_files[index].path!),
+                                leading: Image.network(_files[index].url!),
+                                onTap: () => MyTheme.showImageDialog(context, image: _files[index]),
+                                subtitle: Text('${_files[index].createdAt} • ${_files[index].description}'),
+                                onLongPress: () => MyTheme.push(context, name: 'gallery', widget: Gallery(index: index, items: _files)),
                                 trailing: IconButton(
                                   splashRadius: 25,
                                   tooltip: 'Delete',
-                                  onPressed: () => _delete(_images[index].path!),
+                                  onPressed: () => _delete(_files[index].path!),
                                   icon: const Icon(Icons.delete, color: Colors.red)
                                 )
                               )

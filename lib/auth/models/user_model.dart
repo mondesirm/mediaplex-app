@@ -12,7 +12,8 @@ class Profile {
     id = json['id'];
     email = json['email'];
     username = json['username'];
-    favs = json['favs'] ?? json['favs'].map(Fav.fromJson).toList();
+    // ignore: unnecessary_lambdas
+    favs = json['favs'].map((_) => Fav.fromJson(_)).toList().cast<Fav>();
   }
 
   Map<String, dynamic> toJson() => {
