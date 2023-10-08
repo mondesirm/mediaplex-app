@@ -105,7 +105,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         setState(() => _isLoading = true);
 
                         _service.register(context, model: Register(email: _email.text, password: _password.text, username: _username.text)).then((value) {
-                          if (value is SessionModel) MyTheme.push(context, replace: true, widget: const HomeScreen());
+                          if (value is SessionModel) {
+                            Navigator.of(context).pop();
+                            MyTheme.push(context, replace: true, widget: const HomeScreen());
+                          }
                         }).catchError((error) {
                           MyTheme.showSnackBar(context, text: 'Something went wrong... Please try again later.');
                         }).whenComplete(() => setState(() => _isLoading = false));
