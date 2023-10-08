@@ -65,12 +65,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _email,
                   autofillHints: const ['email'],
                   textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.emailAddress,
                   onFieldSubmitted: (value) => TextInputAction.next,
                   style: MyTheme.appText(weight: FontWeight.normal),
                   decoration: MyTheme.inputDecoration(fontSize: 15, hint: 'Email Address', prefixIcon: Icons.mail),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Email address is required.';
-                    if (!RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$').hasMatch(value)) return 'Email address is invalid.';
+                    if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) return 'Email address is invalid.';
                     return null;
                   }
                 ),

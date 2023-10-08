@@ -95,7 +95,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
                             TextFormField(
                               autofocus: true,
                               controller: _username,
-                              autofillHints: const ['Username'],
+                              autofillHints: const ['username'],
                               textInputAction: TextInputAction.next,
                               onFieldSubmitted: (value) => TextInputAction.next,
                               style: MyTheme.appText(weight: FontWeight.normal),
@@ -109,7 +109,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
                             const SizedBox(height: 12),
                             TextFormField(
                               controller: _email,
-                              autofillHints: const ['Email'],
+                              autofillHints: const ['email'],
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.emailAddress,
                               onFieldSubmitted: (value) => TextInputAction.next,
