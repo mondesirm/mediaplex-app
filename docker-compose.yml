@@ -1,19 +1,11 @@
 version: '3'
 services:
-  flutter-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"  # Remplacez le port si nécessaire
-    volumes:
-      - .:/app
   apache:
     image: apache:tag
     container_name: container_apache
     build:
       context: .
-      dockerfile: Dockerfile2
+      dockerfile: Dockerfile
     ports:
       - "80:80"  # Remplacez le port si nécessaire
     volumes:

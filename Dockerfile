@@ -1,19 +1,11 @@
-# Utilisez une image de base avec Flutter préinstallé
-FROM fischerscode/flutter
+# Utilisez une image de base Apache officielle
+FROM httpd:2.4
 
-# Définissez le répertoire de travail dans lequel vous souhaitez copier votre application Flutter
-WORKDIR /app
+# Copiez le contenu de votre application Flutter Web dans le répertoire "/usr/local/apache2/htdocs/"
+COPY ./build/web/ /usr/local/apache2/htdocs/
 
-# Copiez le contenu de votre application Flutter (y compris le fichier pubspec.yaml) dans le conteneur
-COPY . .
-
-# Exécutez la commande flutter pub get pour installer les dépendances
-RUN flutter pub get
-
-# Build l'application pour le web
-RUN flutter build web
-
-# Exposez le port 80 (ou tout autre port que votre application utilise)
+# Exposez le port 80 (HTTP)
 EXPOSE 80
 
-
+# Facultatif : si vous souhaitez personnaliser la configuration d'Apache, vous pouvez copier vos fichiers de configuration personnalisés ici.
+# COPY ./mon_apache.conf /usr/local/apache2/conf/httpd.conf
