@@ -12,8 +12,8 @@ class HomeService {
   Future<List<Channel>> fetchChannels(BuildContext context) async {
     // var streams = await apiService.getAllData('api/streams.json');
     // var channels = await apiService.getAllData('api/channels.json');
-    var streams = await _service.getAll('static/streams.json', isDb: true);
-    var channels = await _service.getAll('static/channels.json', isDb: true);
+    var streams = await _service.getAll('assets/streams.json', isDb: true);
+    var channels = await _service.getAll('assets/channels.json', isDb: true);
 
     if (streams.isLeft || channels.isLeft) {
       MyTheme.showError(context, text: channels.left.message! + streams.left.message!);

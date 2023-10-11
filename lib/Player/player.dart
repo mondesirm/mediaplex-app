@@ -34,7 +34,7 @@ class _PlayerState extends State<Player> {
     _history = jsonDecode(preferences.getString('history') ?? '[]');
 
     // Remove any duplicates and insert the current video at the top
-    _history.removeWhere((e) => e['url'] == widget.model.url);
+    _history.removeWhere((_) => _['url'] == widget.model.url);
     _history.insert(0, widget.model.toJson());
 
     // Remove any videos beyond 9 and save the list

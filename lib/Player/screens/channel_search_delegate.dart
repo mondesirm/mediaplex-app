@@ -28,14 +28,14 @@ class ChannelSearchDelegate extends SearchDelegate<String> {
       height: double.infinity,
       padding: const EdgeInsets.all(10),
       decoration: MyTheme.boxDecoration(),
-      child: AnimationLimiter(child: ListView.builder(
+      child: filtered.isEmpty ? Center(child: Text('No channels found', style: MyTheme.appText(size: 25, weight: FontWeight.bold))) : AnimationLimiter(child: ListView.builder(
         shrinkWrap: true,
         itemCount: countries.length,
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) => AnimationConfiguration.staggeredList(
           position: index,
           duration: const Duration(seconds: 1),
-          child: SlideAnimation(
+          child: filtered.where((_) => _.country == countries[index]).isEmpty ? const SizedBox() : SlideAnimation(
             horizontalOffset: 80,
             child: FadeInAnimation(child: Card(
               color: MyTheme.surface,
@@ -55,7 +55,7 @@ class ChannelSearchDelegate extends SearchDelegate<String> {
                           context,
                           name: 'livetv/${countries[index].toLowerCase()}',
                           widget: ChannelsScreen(
-                            models: channels.where((_) => _.country == countries[index]).toList(),
+                            channels: channels.where((_) => _.country == countries[index]).toList(),
                             title: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
@@ -77,7 +77,7 @@ class ChannelSearchDelegate extends SearchDelegate<String> {
                     subtitle: Text('${_.categories!.join(' • ')} | ${_.languages!.join(' • ')}'),
                     onTap: () {
                       close(context, '');
-                      MyTheme.push(context, widget: Player(model: _));
+                      MyTheme.push(context, name: 'player', widget: Player(model: _));
                     }
                   )).toList()
                 ]

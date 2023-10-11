@@ -31,7 +31,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
   Widget build(BuildContext context) => Scaffold(
     appBar: MyTheme.appBar(
       context,
-      screen: 'SelectScreen',
+      screen: 'CountriesScreen',
       actions: [
         if (widget.channels.isNotEmpty) IconButton(
           splashRadius: 25,
