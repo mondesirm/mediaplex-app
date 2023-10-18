@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -14,7 +12,9 @@ import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/player/gallery.dart';
 import 'package:mediaplex/home/models/fav_model.dart';
 import 'package:mediaplex/home/widgets/fav_card.dart';
+import 'package:mediaplex/auth/models/user_model.dart';
 import 'package:mediaplex/home/service/home_service.dart';
+import 'package:mediaplex/auth/service/user_service.dart';
 import 'package:mediaplex/player/models/media_model.dart';
 
 enum UploadSource { camera, gallery }
@@ -33,15 +33,18 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
   List<Media> _files = [];
   late TabController _tab;
   List<dynamic> _history = [];
+  late Future<Profile> _profile;
   late Future<List<Fav>> _favorites;
   final ImagePicker _picker = ImagePicker();
   final HomeService _service = HomeService();
+  final UserService _userService = UserService();
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   void init() {
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
     _favorites = _service.fetchFavs(context);
+    _profile = _userService.fetchProfile(context);
     _tab = TabController(length: 3, vsync: this);
     _tab.addListener(() => setState(() => _tabIndex = _tab.index));
   }
@@ -66,24 +69,35 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
 
   // Launch camera or gallery then upload image to Firebase Storage
   Future<void> _upload(UploadSource src) async {
+    // Get id of the current user
+    var profile = await _profile;
+    int id = profile.id!;
+
     XFile? image;
 
     try {
       image = await _picker.pickImage(source: src == UploadSource.camera ? ImageSource.camera : ImageSource.gallery, maxWidth: 1920);
 
-      File file = File(image!.path);
-      String name = path.basename(image.path);
+      // File file = File(image!.path);
+      // String name = path.basename(image.path);
 
-      print('File path: ${file.path} (image path: ${image.path}))');
-      print('File exists: ${file.existsSync()}');
-      print('Uploading $name with size ${file.lengthSync()} bytes, from ${src == UploadSource.camera ? 'camera' : 'gallery'}');
+      var bytes = await image!.readAsBytes();
+
+      // print('File path: ${file.path} (image path: ${image.path}))');
+      // print('File exists: ${file.existsSync()}');
+      // print('Uploading $name with size ${file.lengthSync()} bytes, from ${src == UploadSource.camera ? 'camera' : 'gallery'}');
 
       try {
+        Reference reference = FirebaseStorage.instance.ref().child('$id/${image.name}');
+
+        UploadTask uploadTask = reference.putData(bytes);
+        await uploadTask.whenComplete(() => MyTheme.showSnackBar(context, text: 'Upload complete!'));
+
         // Upload selected image with some custom meta data
-        /* UploadTask uploadTask = */ await _storage.ref(name).putFile(file, SettableMetadata(customMetadata: {
-          'owner': 'a random user',
-          'description': 'No description.'
-        }));
+        // /* UploadTask uploadTask = */ await _storage.ref('$id/$name').putFile(file, SettableMetadata(customMetadata: {
+        //   'owner': profile.username!,
+        //   'description': 'No description.'
+        // }));
 
         // Listen for state changes, errors, and completion of the upload.
         // uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
@@ -119,9 +133,13 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
 
   // Retrieve uploaded images
   Future<List<Media>> _loadImages() async {
+    // Get id of the current user
+    var profile = await _profile;
+    int id = profile.id!;
+
     List<Media> files = [];
 
-    ListResult res = await _storage.ref().list();
+    ListResult res = await _storage.ref(id.toString()).list();
     List<Reference> items = res.items;
 
     await Future.forEach<Reference>(items, (file) async {
@@ -308,24 +326,27 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                           duration: const Duration(seconds: 1),
                           child: SlideAnimation(
                             horizontalOffset: 80,
-                            child: FadeInAnimation(child: Card(
-                              color: MyTheme.surface,
-                              margin: const EdgeInsets.symmetric(vertical: 10),
-                              child: ListTile(
-                                dense: false,
-                                textColor: Colors.white,
-                                title: Text(_files[index].path!),
-                                leading: Image.network(_files[index].url!),
-                                onTap: () => MyTheme.showImageDialog(context, image: _files[index]),
-                                subtitle: Text('${_files[index].createdAt} • ${_files[index].description}'),
-                                onLongPress: () => MyTheme.push(context, name: 'gallery', widget: Gallery(index: index, items: _files)),
-                                trailing: IconButton(
-                                  splashRadius: 25,
-                                  tooltip: 'Delete',
-                                  onPressed: () => _delete(_files[index].path!),
-                                  icon: const Icon(Icons.delete, color: Colors.red)
+                            child: FadeInAnimation(child: Tooltip(
+                              message: 'Long press to enter Gallery Mode',
+                              child: Card(
+                                color: MyTheme.surface,
+                                margin: const EdgeInsets.symmetric(vertical: 10),
+                                child: ListTile(
+                                  dense: false,
+                                  textColor: Colors.white,
+                                  title: Text(_files[index].path!),
+                                  leading: Image.network(_files[index].url!),
+                                  onTap: () => MyTheme.showImageDialog(context, image: _files[index]),
+                                  subtitle: Text('${_files[index].createdAt} • ${_files[index].description}'),
+                                  onLongPress: () => MyTheme.push(context, name: 'gallery', widget: Gallery(index: index, items: _files)),
+                                  trailing: IconButton(
+                                    splashRadius: 25,
+                                    tooltip: 'Delete',
+                                    onPressed: () => _delete(_files[index].path!),
+                                    icon: const Icon(Icons.delete, color: Colors.red)
+                                  )
                                 )
-                              )
+                              ),
                             ))
                           )
                         )

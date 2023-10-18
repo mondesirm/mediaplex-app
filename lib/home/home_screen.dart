@@ -78,22 +78,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: SlideAnimation(
                       verticalOffset: orientation == Orientation.landscape ? 80 : 0,
                       horizontalOffset: orientation == Orientation.landscape ? 0 : 80,
-                      child: FadeInAnimation(child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: InkWell(
-                          autofocus: index == 0,
-                          onTap: () => MyTheme.push(
-                            context,
-                            name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}/all',
-                            widget: ChannelsScreen(title: categoryCards[index].child, channels: index == 0 ? snapshot.data! : channels, showSearch: false)
-                          ),
-                          onLongPress: () => MyTheme.push(
-                            context,
-                            name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}',
-                            widget: CountriesScreen(title: categoryCards[index].child, channels: index == 0 ? snapshot.data! : channels)
-                          ),
-                          child: CategoryCard(model: categoryCards[index])
-                        )
+                      child: FadeInAnimation(child: Tooltip(
+                        message: 'Long press to search by country',
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: InkWell(
+                            autofocus: index == 0,
+                            onTap: () => MyTheme.push(
+                              context,
+                              name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}/all',
+                              widget: ChannelsScreen(title: categoryCards[index].child, channels: index == 0 ? snapshot.data! : channels, showSearch: false)
+                            ),
+                            onLongPress: () => MyTheme.push(
+                              context,
+                              name: 'livetv${index == 0 ? '' : '/${categoryCards[index].type.toLowerCase()}'}',
+                              widget: CountriesScreen(title: categoryCards[index].child, channels: index == 0 ? snapshot.data! : channels)
+                            ),
+                            child: CategoryCard(model: categoryCards[index])
+                          )
+                        ),
                       ))
                     )
                   ));

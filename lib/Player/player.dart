@@ -27,7 +27,7 @@ class _PlayerState extends State<Player> {
 
   void init() async {
     _fileName = widget.model.name ?? widget.model.url.split('/').last;
-    _videoPlayer = VideoPlayerController.networkUrl(Uri.parse(test));
+    _videoPlayer = VideoPlayerController.networkUrl(Uri.parse(widget.model.url));
     _initialize = _videoPlayer.initialize();
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
