@@ -3,6 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
+import 'package:flutter/material.dart';
 
 import 'error_screen.dart';
 import 'package:mediaplex/auth/screens/login_screen.dart';
@@ -230,4 +233,83 @@ class MyTheme {
       )
     )
   );
+
+  static Future<void> showVideoDialog(BuildContext context, {required Media video}) {
+     String test = 'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4';
+    print(video.url);
+    VideoPlayerController videoController =
+        VideoPlayerController.network(test);
+
+  return showDialog(
+    context: context,
+    builder: (context) => Dialog(
+      backgroundColor: Colors.black,
+      child: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AspectRatio(
+            aspectRatio: videoController.value.aspectRatio,
+            child: VideoPlayer(videoController),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (videoController.value.isPlaying) {
+                videoController.pause();
+              } else {
+                videoController.play();
+              }
+            },
+            child: Icon(
+              videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
+            ),
+          ),
+        ],
+      ),
+      ),
+    ),
+  ).whenComplete(() {
+    videoController.dispose(); // Dispose of the video controller when the dialog is closed.
+  });
+}
+
+static Future<void> showVideoPlayerDialog(BuildContext context, {required Media video}) async {
+  
+    VideoPlayerController _controller =
+        VideoPlayerController.network(video.url!);
+
+  await _controller.initialize();
+
+  ChewieController chewieController = ChewieController(
+    videoPlayerController: _controller,
+    autoPlay: true, // Lecture automatique
+    looping: false, // Lecture en boucle
+    showControls: true, // Afficher les contrôles du lecteur
+    //aspectRatio: 16 / 9, // Ratio de l'aspect de la vidéo (peut être ajusté)
+  );
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7, // Ajustez cette valeur selon vos besoins
+          ),
+          child: Chewie(controller: chewieController),
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+            onPressed: () {
+              chewieController.dispose(); // Libérer les ressources du lecteur vidéo
+              Navigator.of(context).pop(); // Fermer la boîte de dialogue
+            },
+            child: Text('Fermer'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 }

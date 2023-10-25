@@ -19,6 +19,7 @@ import 'package:mediaplex/auth/models/user_model.dart';
 import 'package:mediaplex/home/service/home_service.dart';
 import 'package:mediaplex/auth/service/user_service.dart';
 import 'package:mediaplex/player/models/media_model.dart';
+import 'package:mediaplex/player/player.dart';
 
 enum UploadSource { camera, gallery, video }
 
@@ -586,15 +587,16 @@ class _LibraryScreenState extends State<LibraryScreen>
                                                                   title: Text(
                                                                       _files[index]
                                                                           .path!),
-                                                                  leading: Image.network(
+                                                                 /* leading: Image.network(
                                                                       _files[index]
-                                                                          .url!),
+                                                                          .url!),*/
+                                                                          // MyTheme.push(context, name: 'player', widget: Player(model: _files[index]));
                                                                   onTap: () =>
-                                                                      MyTheme.showImageDialog(
+                                                                      MyTheme.showVideoPlayerDialog(
                                                                           context,
-                                                                          image: _files[index]),
+                                                                          video: _files[index]),
+                                                                          
                                                                   subtitle: Text('${_files[index].createdAt} • ${_files[index].description}'),
-                                                                  onLongPress: () => MyTheme.push(context, name: 'gallery', widget: Gallery(index: index, items: _files)),
                                                                   trailing: IconButton(splashRadius: 25, tooltip: 'Delete', onPressed: () => _delete(_files[index].path!), icon: const Icon(Icons.delete, color: Colors.red)))),
                                                         )))))))
                           ]);
