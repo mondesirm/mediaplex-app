@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'home/home_screen.dart';
 import 'auth/screens/login_screen.dart';
-import 'package:agora_uikit/agora_uikit.dart';
+//import 'package:agora_uikit/agora_uikit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,11 +34,11 @@ class _MyAppState extends State<MyApp> {
         ),
       ),*/
       );
-  AgoraClient client = AgoraClient(
+ /* AgoraClient client = AgoraClient(
       agoraConnectionData: AgoraConnectionData(
           appId: dotenv.env['AGORA_APP_ID']!,
           channelName: dotenv.env['AGORA_APP_CHANNEL']!),
-      enabledPermission: [Permission.camera, Permission.microphone]);
+      enabledPermission: [Permission.camera, Permission.microphone]);*/
 
   void switchHome() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     switchHome();
     super.initState();
-    client.initialize();
+    //client.initialize();
   }
 
   @override
