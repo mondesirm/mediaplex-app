@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mediaplex/livestream_agora/screens/managerPage.dart';
+import 'package:mediaplex/livestream_agora/screens/userPage.dart';
 
 class LivestreamPage extends StatefulWidget {
   const LivestreamPage({super.key});
@@ -8,6 +10,28 @@ class LivestreamPage extends StatefulWidget {
 }
 
 class _LivestreamPageState extends State<LivestreamPage> {
+  final _channelName = TextEditingController();
+  final _userName = TextEditingController();
+
+  goToManagerPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ManagerPage(
+        channelName: _channelName.text,
+      )),
+    );
+  }
+
+  goToUserPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UserPage(
+        channelName: _channelName.text,
+        userName: _userName.text,
+      )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,10 +42,34 @@ class _LivestreamPageState extends State<LivestreamPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(),
-            TextField(),
+            SizedBox(
+              width: MediaQuery.of(context).size.width *0.2,
+              child: TextField(
+                controller: _userName,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  
+                  ),
+                  labelText: 'User Name',
+                ),
+              ),
+              ),
+              SizedBox(
+              width: MediaQuery.of(context).size.width *0.2,
+              child: TextField(
+                controller: _channelName,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                  
+                  ),
+                  labelText: 'Channel Name',
+                ),
+              ),
+              )
             TextButton(
-              onPressed: () {},
+              onPressed: goToUserPage(),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -35,12 +83,8 @@ class _LivestreamPageState extends State<LivestreamPage> {
               ),
             ),
             TextButton(
-              style: TextButton.styleFrom(
-                primary: Colors.white,
-                backgroundColor: Colors.blue,
-                onSurface: Colors.grey,
-              ),
-              onPressed: () => {},
+              
+              onPressed: goToManagerPage(),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[

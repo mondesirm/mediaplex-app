@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ManagerPage extends StatefulWidget {
-  const ManagerPage({super.key});
+  final String channelName;
+
+  const ManagerPage({
+    Key? key,
+    required this.channelName,
+  }) : super(key: key);
 
   @override
   State<ManagerPage> createState() => _ManagerPageState();
@@ -10,6 +15,10 @@ class ManagerPage extends StatefulWidget {
 class _ManagerPageState extends State<ManagerPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold(
+      body: Center(
+        child: Text("Manager Page")
+      )
+    );
   }
 }

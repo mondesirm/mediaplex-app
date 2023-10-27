@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
 
 class UserPage extends StatefulWidget {
-  const UserPage({super.key});
+ 
+  final String channelName;
+  final String userName;
+
+   const UserPage({
+    Key? key,
+    required this.channelName,
+    required this.userName,
+  }) : super(key: key);
+  
 
   @override
-  State UserPage> createState() =>  UserPageState();
+  State<UserPage> createState() => _UserPageState();
 }
 
-class  UserPageState extends State UserPage> {
+class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold(
+      body: Center(
+        child: Text("User Page")
+      )
+    );
   }
 }
