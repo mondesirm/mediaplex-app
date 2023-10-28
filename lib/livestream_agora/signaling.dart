@@ -45,6 +45,7 @@ class Signaling {
       print('Got candidate: ${candidate.toMap()}');
       callerCandidatesCollection.add(candidate.toMap());
     };
+    // Finish Code for collecting ICE candidate
 
     // Add code for creating a stream
     RTCSessionDescription offer = await peerConnection!.createOffer();
@@ -109,6 +110,80 @@ class Signaling {
     return streamId;
   }
 
+  Future<void> joinStream(String streamId, RTCVideoRenderer remoteVideo) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    print(streamId);
+    DocumentReference streamRef = db.collection('streams').doc('$streamId');
+    var streamSnapshot = await streamRef.get();
+    print('Got stream ${streamSnapshot.exists}');
+
+    if (streamSnapshot.exists) {
+      print('Create PeerConnection with configuration: $configuration');
+      peerConnection = await createPeerConnection(configuration);
+
+      registerPeerConnectionListeners();
+
+      localStream?.getTracks().forEach((track) {
+        peerConnection?.addTrack(track, localStream!);
+      });
+
+      // Code for collecting ICE candidates below
+      var calleeCandidatesCollection = streamRef.collection('calleeCandidates');
+      peerConnection!.onIceCandidate = (RTCIceCandidate? candidate) {
+        if (candidate == null) {
+          print('onIceCandidate: complete!');
+          return;
+        }
+        print('onIceCandidate: ${candidate.toMap()}');
+        calleeCandidatesCollection.add(candidate.toMap());
+      };
+      // Code for collecting ICE candidate above
+
+      peerConnection?.onTrack = (RTCTrackEvent event) {
+        print('Got remote track: ${event.streams[0]}');
+        event.streams[0].getTracks().forEach((track) {
+          print('Add a track to the remoteStream: $track');
+          remoteStream?.addTrack(track);
+        });
+      };
+
+      // Code for creating SDP answer below
+      var data = streamSnapshot.data() as Map<String, dynamic>;
+      print('Got offer $data');
+      var offer = data['offer'];
+      await peerConnection?.setRemoteDescription(
+        RTCSessionDescription(offer['sdp'], offer['type']),
+      );
+      var answer = await peerConnection!.createAnswer();
+      print('Created Answer $answer');
+
+      await peerConnection!.setLocalDescription(answer);
+
+      Map<String, dynamic> streamWithAnswer = {
+        'answer': {'type': answer.type, 'sdp': answer.sdp}
+      };
+
+      await streamRef.update(streamWithAnswer);
+      // Finished creating SDP answer
+
+      // Listening for remote ICE candidates below
+      streamRef.collection('callerCandidates').snapshots().listen((snapshot) {
+        snapshot.docChanges.forEach((document) {
+          var data = document.doc.data() as Map<String, dynamic>;
+          print(data);
+          print('Got new remote ICE candidate: $data');
+          peerConnection!.addCandidate(
+            RTCIceCandidate(
+              data['candidate'],
+              data['sdpMid'],
+              data['sdpMLineIndex'],
+            ),
+          );
+        });
+      });
+    }
+  }
+
   Future<void> openUserMedia(
     RTCVideoRenderer localVideo,
     RTCVideoRenderer remoteVideo,
@@ -120,6 +195,33 @@ class Signaling {
     localStream = stream;
 
     remoteVideo.srcObject = await createLocalMediaStream('key');
+  }
+
+  Future<void> hangUp(RTCVideoRenderer localVideo) async {
+    List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
+    tracks.forEach((track) {
+      track.stop();
+    });
+
+    if (remoteStream != null) {
+      remoteStream!.getTracks().forEach((track) => track.stop());
+    }
+    if (peerConnection != null) peerConnection!.close();
+
+    if (streamId != null) {
+      var db = FirebaseFirestore.instance;
+      var streamRef = db.collection('streams').doc(streamId);
+      var calleeCandidates = await streamRef.collection('calleeCandidates').get();
+      calleeCandidates.docs.forEach((document) => document.reference.delete());
+
+      var callerCandidates = await streamRef.collection('callerCandidates').get();
+      callerCandidates.docs.forEach((document) => document.reference.delete());
+
+      await streamRef.delete();
+    }
+
+    localStream!.dispose();
+    remoteStream?.dispose();
   }
 
   void registerPeerConnectionListeners() {

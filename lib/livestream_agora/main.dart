@@ -84,7 +84,36 @@ class _StreamPageState extends State<StreamPage> with SingleTickerProviderStateM
                 SizedBox(
                   width: 8,
                 ),
-                
+                ElevatedButton(
+                  onPressed: () async {
+                    streamId = await signaling.createStream(_remoteRenderer);
+                    textEditingController.text = streamId!;
+                    setState(() {});
+                  },
+                  child: Text("Create stream"),
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Add streamId
+                    signaling.joinStream(
+                      textEditingController.text.trim(),
+                      _remoteRenderer,
+                    );
+                  },
+                  child: Text("Join stream"),
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    signaling.hangUp(_localRenderer);
+                  },
+                  child: Text("Hangup"),
+                )
               ],
             ),
             SizedBox(height: 8),
