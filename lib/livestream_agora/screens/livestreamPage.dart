@@ -12,6 +12,13 @@ class LivestreamPage extends StatefulWidget {
 class _LivestreamPageState extends State<LivestreamPage> {
   final _channelName = TextEditingController();
   final _userName = TextEditingController();
+  late int uid;
+
+  @override
+  void initState() {
+    super.initState();
+    //getUserUid();
+  }
 
   goToManagerPage() {
     Navigator.push(

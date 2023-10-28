@@ -4,11 +4,4 @@ linter:
   rules:
     unnecessary_final: true
     use_decorated_box: true
-    unnecessary_lambdas: true
-    use_named_constants: true
-    prefer_single_quotes: true
-    use_super_parameters: true
-    unnecessary_null_checks: true
-    unnecessary_parenthesis: true
-    unnecessary_await_in_return: true
-    use_late_for_private_fields_and_variables: true
+   

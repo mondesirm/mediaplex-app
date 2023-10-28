@@ -64,6 +64,12 @@ dependencies:
   agora_rtc_engine: ^6.2.4
   agora_rtm: ^1.5.8
   flutter_riverpod: ^2.4.4
+  permission_handler: ^8.1.1
+  app_popup_menu: ^1.0.0
+  modal_bottom_sheet: ^2.0.0
+  circular_menu: ^1.2.3
+  flutter_webrtc: ^0.9.27
+  cloud_firestore_web: ^3.4.3
 
 
 dev_dependencies:

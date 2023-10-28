@@ -5,13 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
-import 'package:flutter/material.dart';
 
 import 'error_screen.dart';
 import 'package:mediaplex/auth/screens/login_screen.dart';
 import 'package:mediaplex/player/models/media_model.dart';
 import 'package:mediaplex/home/screens/account_screen.dart';
 import 'package:mediaplex/home/screens/library_screen.dart';
+import 'package:mediaplex/livestream_agora/main.dart';
 
 class MyTheme {
   static const Color darkBg = Color(0xff1A1726);
@@ -74,6 +74,15 @@ class MyTheme {
               const SizedBox(width: 15)
             ]),
             if (screen != 'HomeScreen' || actions.isNotEmpty) ...[Center(child: Container(width: 1.5, height: 40, color: Colors.white.withOpacity(.5))), const SizedBox(width: 15)],
+            if (!Navigator.canPop(context)) Row(children: [
+              IconButton(
+                splashRadius: 25,
+                tooltip: 'My stream',
+                icon: const Icon(Icons.live_tv, size: 25, color: secondary),
+                onPressed: () => push(context, name: 'stream', widget: const StreamPage())
+              ),
+              const SizedBox(width: 15)
+            ]),
             if (!Navigator.canPop(context)) Row(children: [
               IconButton(
                 splashRadius: 25,
@@ -236,7 +245,6 @@ class MyTheme {
 
   static Future<void> showVideoDialog(BuildContext context, {required Media video}) {
      String test = 'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4';
-    print(video.url);
     VideoPlayerController videoController =
         VideoPlayerController.network(test);
 
