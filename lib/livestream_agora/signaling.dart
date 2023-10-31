@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:mediaplex/auth/models/user_model.dart';
 
 typedef void StreamStateCallback(MediaStream stream);
 
@@ -24,7 +25,7 @@ class Signaling {
   String? currentStreamText;
   StreamStateCallback? onAddRemoteStream;
 
-  Future<String> createStream(RTCVideoRenderer remoteRenderer) async {
+  Future<String> createStream(RTCVideoRenderer remoteRenderer, Profile profile) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     DocumentReference streamRef = db.collection('streams').doc();
 
@@ -52,9 +53,14 @@ class Signaling {
     await peerConnection!.setLocalDescription(offer);
     print('Created offer: $offer');
 
-    Map<String, dynamic> streamWithOffer = {'offer': offer.toMap()};
+    Map<String, dynamic> streamWithOffer = {'offer': offer.toMap(), 'profile': {
+        'id': profile.id,
+        'username': profile.username,
+        'email': profile.email,
+      }};
 
     await streamRef.set(streamWithOffer);
+
     var streamId = streamRef.id;
     print('New stream created with SDK offer. Stream ID: $streamId');
     currentStreamText = 'Current stream is $streamId - You are the caller!';
@@ -73,18 +79,20 @@ class Signaling {
     streamRef.snapshots().listen((snapshot) async {
       print('Got updated stream: ${snapshot.data()}');
 
-      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      if (peerConnection?.getRemoteDescription() != null &&
-          data['answer'] != null) {
-        var answer = RTCSessionDescription(
-          data['answer']['sdp'],
-          data['answer']['type'],
-        );
+      if(snapshot.data() != null) {
+        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+        if (peerConnection?.getRemoteDescription() != null &&
+            data['answer'] != null) {
+          var answer = RTCSessionDescription(
+            data['answer']['sdp'],
+            data['answer']['type'],
+          );
 
-        print("Someone tried to connect");
-        //get state of peer connection
-        print(peerConnection!.connectionState);
-        await peerConnection?.setRemoteDescription(answer);
+          print("Someone tried to connect");
+          //get state of peer connection
+          print(peerConnection!.connectionState);
+          await peerConnection?.setRemoteDescription(answer);
+        }
       }
     });
     // Listening for remote session description above
@@ -108,6 +116,17 @@ class Signaling {
     // Listen for remote ICE candidates above
 
     return streamId;
+  }
+
+  //get all streams
+  Future<List<String>> getStreams() async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    QuerySnapshot querySnapshot = await db.collection('streams').get();
+    List<String> streams = [];
+    querySnapshot.docs.forEach((doc) {
+      streams.add(doc.id);
+    });
+    return streams;
   }
 
   Future<void> joinStream(String streamId, RTCVideoRenderer remoteVideo) async {
@@ -197,7 +216,7 @@ class Signaling {
     remoteVideo.srcObject = await createLocalMediaStream('key');
   }
 
-  Future<void> hangUp(RTCVideoRenderer localVideo) async {
+  Future<void> hangUp(String streamId, RTCVideoRenderer localVideo) async {
     List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
     tracks.forEach((track) {
       track.stop();
@@ -207,6 +226,9 @@ class Signaling {
       remoteStream!.getTracks().forEach((track) => track.stop());
     }
     if (peerConnection != null) peerConnection!.close();
+
+    print("Stream id: $streamId");
+    print("Hang up");
 
     if (streamId != null) {
       var db = FirebaseFirestore.instance;
@@ -239,6 +261,11 @@ class Signaling {
 
     peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
       print('ICE connection state change: $state');
+      if(state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected){
+        print("Disconnected");
+        //reload page
+        //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => StreamPage()));
+        }
     };
 
     peerConnection?.onAddStream = (MediaStream stream) {
