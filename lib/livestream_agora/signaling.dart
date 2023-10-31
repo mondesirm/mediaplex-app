@@ -25,7 +25,8 @@ class Signaling {
   String? currentStreamText;
   StreamStateCallback? onAddRemoteStream;
 
-  Future<String> createStream(RTCVideoRenderer remoteRenderer, Profile profile) async {
+  Future<String> createStream(
+      RTCVideoRenderer remoteRenderer, Profile profile) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     DocumentReference streamRef = db.collection('streams').doc();
 
@@ -53,11 +54,25 @@ class Signaling {
     await peerConnection!.setLocalDescription(offer);
     print('Created offer: $offer');
 
-    Map<String, dynamic> streamWithOffer = {'offer': offer.toMap(), 'profile': {
+    Map<String, dynamic> streamWithOffer = {
+      'offer': offer.toMap(),
+      'profile': {
         'id': profile.id,
         'username': profile.username,
         'email': profile.email,
-      }};
+      }
+    };
+
+    //check if a stream with the same profil exist
+    //if yes, delete it
+    QuerySnapshot querySnapshot = await db.collection('streams').get();
+    querySnapshot.docs.forEach((doc) {
+      var dataToDelete = doc.data() as Map<String, dynamic>;
+      if (dataToDelete['profile'] != null &&
+          dataToDelete['profile']['email'] == profile.email) {
+        doc.reference.delete();
+      }
+    });
 
     await streamRef.set(streamWithOffer);
 
@@ -79,7 +94,7 @@ class Signaling {
     streamRef.snapshots().listen((snapshot) async {
       print('Got updated stream: ${snapshot.data()}');
 
-      if(snapshot.data() != null) {
+      if (snapshot.data() != null) {
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
         if (peerConnection?.getRemoteDescription() != null &&
             data['answer'] != null) {
@@ -88,9 +103,11 @@ class Signaling {
             data['answer']['type'],
           );
 
-          print("Someone tried to connect");
+          print("Someone tried to connect 2");
+          print("test2");
           //get state of peer connection
           print(peerConnection!.connectionState);
+          print("test");
           await peerConnection?.setRemoteDescription(answer);
         }
       }
@@ -170,6 +187,7 @@ class Signaling {
       var data = streamSnapshot.data() as Map<String, dynamic>;
       print('Got offer $data');
       var offer = data['offer'];
+      print("test3");
       await peerConnection?.setRemoteDescription(
         RTCSessionDescription(offer['sdp'], offer['type']),
       );
@@ -233,10 +251,12 @@ class Signaling {
     if (streamId != null) {
       var db = FirebaseFirestore.instance;
       var streamRef = db.collection('streams').doc(streamId);
-      var calleeCandidates = await streamRef.collection('calleeCandidates').get();
+      var calleeCandidates =
+          await streamRef.collection('calleeCandidates').get();
       calleeCandidates.docs.forEach((document) => document.reference.delete());
 
-      var callerCandidates = await streamRef.collection('callerCandidates').get();
+      var callerCandidates =
+          await streamRef.collection('callerCandidates').get();
       callerCandidates.docs.forEach((document) => document.reference.delete());
 
       await streamRef.delete();
@@ -253,6 +273,10 @@ class Signaling {
 
     peerConnection?.onConnectionState = (RTCPeerConnectionState state) {
       print('Connection state change: $state');
+      if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
+        print("Disconnected");
+
+      }
     };
 
     peerConnection?.onSignalingState = (RTCSignalingState state) {
@@ -261,11 +285,10 @@ class Signaling {
 
     peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
       print('ICE connection state change: $state');
-      if(state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected){
-        print("Disconnected");
-        //reload page
-        //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => StreamPage()));
-        }
+      if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
+        print("Disconnected 2");
+
+      }
     };
 
     peerConnection?.onAddStream = (MediaStream stream) {

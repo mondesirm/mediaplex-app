@@ -6,6 +6,7 @@ import 'package:mediaplex/livestream_agora/signaling.dart';
 import 'package:mediaplex/utils/theme.dart';
 import 'package:mediaplex/auth/service/user_service.dart';
 import 'package:mediaplex/auth/models/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StreamPage extends StatefulWidget {
   const StreamPage({super.key});
@@ -21,11 +22,18 @@ class _StreamPageState extends State<StreamPage>
   Signaling signaling = Signaling();
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
-  String? streamId;
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  String? streamId = null;
+  String? streamIdJoin = null;
   TextEditingController textEditingController = TextEditingController(text: '');
+  TextEditingController textEditingController2 =
+      TextEditingController(text: '');
   final UserService _userService = UserService();
   late Future<Profile> _profile;
   late Profile _data;
+  late Future<List<Profile>> _users;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -37,11 +45,31 @@ class _StreamPageState extends State<StreamPage>
       setState(() {});
     });
 
+    // Add event listener to peerConnection
+    signaling.peerConnection?.onConnectionState = (state) {
+      print("signaling.peerConnection?.onConnectionState");
+      print(state);
+      if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
+        // The peer connection has disconnected
+        // You can add your custom logic here
+        print("Peer Connection Disconnected 2");
+
+        // Close the peer connection
+        signaling.peerConnection?.close();
+        FirebaseFirestore db = FirebaseFirestore.instance;
+        print(streamId);
+        DocumentReference streamRef = db.collection('streams').doc('$streamId');
+        streamRef.delete();
+      }
+    };
+    //if sig
+
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
     _profile = _userService.fetchProfile(context);
-    _tab = TabController(length: 2, vsync: this);
+    _tab = TabController(length: 3, vsync: this);
     _tab.addListener(() => setState(() => _tabIndex = _tab.index));
+    _users = _userService.fetchUsers(context);
   }
 
   @override
@@ -67,7 +95,10 @@ class _StreamPageState extends State<StreamPage>
                   text: 'Start stream',
                   icon: Icon(Icons.reset_tv, color: MyTheme.secondary)),
               Tab(
-                  text: 'Join stream',
+                  text: 'Join stream with id',
+                  icon: Icon(Icons.featured_video, color: MyTheme.secondary)),
+              Tab(
+                  text: 'List stream',
                   icon: Icon(Icons.featured_video, color: MyTheme.secondary))
             ]),
             actions: [
@@ -111,7 +142,7 @@ class _StreamPageState extends State<StreamPage>
                               _data = snapshot.data!;
                               return Column(
                                 children: [
-                                  Text('Steam of: ${_data.username}',
+                                  Text('Stream of ${_data.username}',
                                       style: MyTheme.appText(size: 20)),
                                 ],
                               );
@@ -141,8 +172,8 @@ class _StreamPageState extends State<StreamPage>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: MyTheme.boxDecoration(),
+                      // padding: const EdgeInsets.all(10),
+                      //decoration: MyTheme.boxDecoration(),
                       child: FutureBuilder<Profile>(
                           future: _profile,
                           builder: (context, snapshot) {
@@ -157,18 +188,32 @@ class _StreamPageState extends State<StreamPage>
                               _data = snapshot.data!;
                               return Column(
                                 children: [
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      streamId = await signaling.createStream(
-                                          _remoteRenderer, _data);
-                                      textEditingController.text = streamId!;
-                                      setState(() {});
-                                    },
-                                    child: Text("Create stream"),
-                                  ),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
+                                  streamId != null
+                                      ? Container()
+                                      : Container(
+                                          height: 50,
+                                          decoration: MyTheme.boxDecoration(
+                                              radius: 30,
+                                              colors: [
+                                                MyTheme.logoDark,
+                                                MyTheme.logoLight
+                                                    .withOpacity(0.7)
+                                              ]),
+                                          child: ElevatedButton(
+                                              style: MyTheme.buttonStyle(
+                                                  bgColor: Colors.transparent,
+                                                  borderColor:
+                                                      Colors.transparent),
+                                              onPressed: () async {
+                                                streamId = await signaling
+                                                    .createStream(
+                                                        _remoteRenderer, _data);
+                                                textEditingController.text =
+                                                    streamId!;
+                                                setState(() {});
+                                              },
+                                              child: Text('Create stream',
+                                                  style: MyTheme.appText()))),
                                 ],
                               );
                             } else {
@@ -179,12 +224,32 @@ class _StreamPageState extends State<StreamPage>
                     SizedBox(
                       width: 8,
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        signaling.hangUp(streamId!, _localRenderer);
-                      },
-                      child: Text("Stop stream"),
-                    )
+                    streamId != null
+                        ? Container(
+                            height: 50,
+                            decoration: MyTheme.boxDecoration(
+                                radius: 30,
+                                colors: [
+                                  MyTheme.logoDark,
+                                  MyTheme.logoLight.withOpacity(0.7)
+                                ]),
+                            child: ElevatedButton(
+                                style: MyTheme.buttonStyle(
+                                    bgColor: Colors.transparent,
+                                    borderColor: Colors.transparent),
+                                onPressed: () async {
+                                  signaling.hangUp(streamId!, _localRenderer);
+                                  streamId = null;
+                                  _localRenderer = RTCVideoRenderer();
+                                  textEditingController.text = '';
+                                  setState(() {});
+                                  initState();
+                                  /* signaling.openUserMedia(
+                                      _localRenderer, _remoteRenderer);*/
+                                },
+                                child: Text('Stop stream',
+                                    style: MyTheme.appText())))
+                        : Container(),
                   ],
                 ),
                 Padding(
@@ -192,16 +257,41 @@ class _StreamPageState extends State<StreamPage>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Stream ID: "),
-                      Flexible(
-                        child: TextFormField(
-                          controller: textEditingController,
+                      Text('Join the stream with ID:',
+                          style: MyTheme.appText(weight: FontWeight.w500)),
+                      const SizedBox(height: 40),
+                      SizedBox(
+                        width: MediaQuery.sizeOf(context).width * .7,
+                        child: Form(
+                          key: _formKey,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          child: Column(children: [
+                            TextFormField(
+                                autofocus: true,
+                                controller: textEditingController,
+                                textInputAction: TextInputAction.next,
+                                onFieldSubmitted: (value) =>
+                                    TextInputAction.next,
+                                style:
+                                    MyTheme.appText(weight: FontWeight.normal),
+                                decoration: MyTheme.inputDecoration(
+                                    fontSize: 15,
+                                    hint: 'Stream Id',
+                                    prefixIcon: Icons.person),
+                                enabled: false,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty)
+                                    return 'Stream ID is required.';
+                                  if (value.length < 10)
+                                    return 'Stream ID should be at least 10 characters long.';
+                                  return null;
+                                }),
+                          ]),
                         ),
                       )
                     ],
                   ),
                 ),
-                SizedBox(height: 8)
               ],
             ),
           ),
@@ -214,19 +304,46 @@ class _StreamPageState extends State<StreamPage>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Add streamId
-                        signaling.joinStream(
-                          textEditingController.text.trim(),
-                          _remoteRenderer,
-                        );
-                      },
-                      child: Text("Join stream"),
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
+                    Container(
+                        height: 50,
+                        decoration: MyTheme.boxDecoration(radius: 30, colors: [
+                          MyTheme.logoDark,
+                          MyTheme.logoLight.withOpacity(0.7)
+                        ]),
+                        child: ElevatedButton(
+                            style: MyTheme.buttonStyle(
+                                bgColor: Colors.transparent,
+                                borderColor: Colors.transparent),
+                            onPressed: () async {
+                              signaling.joinStream(
+                                textEditingController2.text.trim(),
+                                _remoteRenderer,
+                              );
+                              signaling.peerConnection?.onConnectionState =
+                                  (state) {
+                                print(
+                                    "signaling.peerConnection?.onConnectionState");
+                                print(state);
+                                if (state ==
+                                    RTCPeerConnectionState
+                                        .RTCPeerConnectionStateDisconnected) {
+                                  // The peer connection has disconnected
+                                  // You can add your custom logic here
+                                  print("Peer Connection Disconnected 3");
+
+                                  // Close the peer connection
+                                  signaling.peerConnection?.close();
+                                  FirebaseFirestore db =
+                                      FirebaseFirestore.instance;
+                                  print(streamId);
+                                  DocumentReference streamRef =
+                                      db.collection('streams').doc('$streamId');
+                                  streamRef.delete();
+                                }
+                              };
+                            },
+                            child:
+                                Text('Join stream', style: MyTheme.appText()))),
                   ],
                 ),
                 SizedBox(height: 8),
@@ -238,20 +355,68 @@ class _StreamPageState extends State<StreamPage>
                       children: [
                         /* Expanded(
                             child: RTCVideoView(_localRenderer, mirror: true)),*/
-                        Expanded(child: RTCVideoView(_remoteRenderer)),
+                        Expanded(
+                            child: RTCVideoView(_remoteRenderer, mirror: true)),
                       ],
                     ),
                   ),
                 ),
+                /*FutureBuilder<List<Profile>>(
+                    future: _users,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError)
+                        return Center(
+                            child: Text(
+                                'Something went wrong...\nPlease try again later.',
+                                textAlign: TextAlign.center,
+                                style: MyTheme.appText(size: 20)));
+
+                      if (snapshot.hasData) {
+                        final user = snapshot.data!;
+                        //return list view of users
+                        return ListView.builder(
+                            itemCount: user.length,
+                            itemBuilder: (context, index) {
+                              return Text("test");
+                            });
+                      } else {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                    }),*/
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Join the following Stream: "),
-                      Flexible(
-                        child: TextFormField(
-                          controller: textEditingController,
+                      Text('Join the stream with ID:',
+                          style: MyTheme.appText(weight: FontWeight.w500)),
+                      const SizedBox(height: 40),
+                      SizedBox(
+                        width: MediaQuery.sizeOf(context).width * .7,
+                        child: Form(
+                          key: _formKey2,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          child: Column(children: [
+                            TextFormField(
+                                autofocus: true,
+                                controller: textEditingController2,
+                                textInputAction: TextInputAction.next,
+                                onFieldSubmitted: (value) =>
+                                    TextInputAction.next,
+                                style:
+                                    MyTheme.appText(weight: FontWeight.normal),
+                                decoration: MyTheme.inputDecoration(
+                                    fontSize: 15,
+                                    hint: 'Stream Id',
+                                    prefixIcon: Icons.person),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty)
+                                    return 'Stream ID is required.';
+                                  if (value.length < 10)
+                                    return 'Stream ID should be at least 10 characters long.';
+                                  return null;
+                                }),
+                          ]),
                         ),
                       )
                     ],
@@ -260,7 +425,63 @@ class _StreamPageState extends State<StreamPage>
                 SizedBox(height: 8)
               ],
             ),
-          )
+          ),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: MyTheme.boxDecoration(),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: db.collection('streams').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator(); // Display a loading indicator
+                }
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+                if (!snapshot.hasData) {
+                  return Text('No data available'); // Handle empty data
+                }
+
+                final streamDocs = snapshot.data!.docs;
+
+                return ListView.builder(
+                  itemCount: streamDocs.length,
+                  itemBuilder: (context, index) {
+                    // print(streamData);
+                    final streamData = streamDocs[index].data();
+
+                    //if profile is not null then print the profile
+                    //
+                    if (streamData is Map<String, dynamic>) {
+                      var profile = streamData["profile"];
+                      var username = profile["username"];
+
+                      return Card(
+                        elevation: 3, // Pour ajouter une ombre à la carte
+                        margin: EdgeInsets.all(8), // Marge autour de la carte
+                        child: ListTile(
+                          title: Text('Streamer : $username'),
+                          onTap: () {
+                            streamIdJoin = streamDocs[index].id.toString();
+                            _tab.index = 1;
+                            textEditingController2.text =
+                                streamIdJoin.toString();
+                          },
+                          leading: Icon(
+                              Icons.video_library), // Icône à gauche du titre
+                          subtitle: Text("More information here"), // Sous-titre
+                          // Vous pouvez personnaliser davantage en ajoutant plus d'informations ici
+                        ),
+                      );
+                    }
+                    return ListTile(
+                      title: Text("No stream available"),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
         ]),
       );
 }

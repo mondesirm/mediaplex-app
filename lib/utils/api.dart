@@ -38,6 +38,15 @@ class ApiService {
     if (response.statusCode >= 500) return const Left(MyError(key: AppError.SERVER_ERROR));
     return Left(MyError(key: AppError.ERROR_DETECTED, message: jsonDecode(response.body)['detail']));
   }
+ Future<Either<MyError, List<dynamic>>> getList(String endpoint, {bool isDb = false}) async {
+    Uri uri = getUri(endpoint, isDb: isDb);
+    var response = await http.get(uri, headers: await getHeaders());
+
+    if (response.statusCode == 200) return Right(jsonDecode(response.body.toString()));
+    if (response.statusCode >= 500) return const Left(MyError(key: AppError.SERVER_ERROR));
+    return Left(MyError(key: AppError.ERROR_DETECTED, message: jsonDecode(response.body)['detail']));
+  }
+
 
   Future<Either<MyError, Map<String, dynamic>>> post(String endpoint, Map<String, dynamic> requestBody, {bool isDb = false}) async {
     Uri uri = getUri(endpoint, isDb: isDb);

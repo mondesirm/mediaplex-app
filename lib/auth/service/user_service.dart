@@ -15,12 +15,30 @@ class UserService {
     return Profile.fromJson(response.isLeft ? {} : response.right);
   }
 
-  Future<dynamic> updateProfile(BuildContext context, {required ProfileUpdate model}) async {
+  Future<dynamic> updateProfile(BuildContext context,
+      {required ProfileUpdate model}) async {
     var response = await _service.patch('profile', model.toJson(), isDb: true);
 
-    if (response.isLeft) return MyTheme.showError(context, text: response.left.message!);
+    if (response.isLeft)
+      return MyTheme.showError(context, text: response.left.message!);
 
-    await AuthService().login(context, model: Login(email: model.email, password: model.newPassword!.isEmpty ? model.oldPassword : model.newPassword));
+    await AuthService().login(context,
+        model: Login(
+            email: model.email,
+            password: model.newPassword!.isEmpty
+                ? model.oldPassword
+                : model.newPassword));
     return Profile.fromJson(response.right);
+  }
+
+  Future<List<Profile>> fetchUsers(BuildContext context) async {
+    
+    var response = await _service.getList('user', isDb: true);
+    print(response.right);
+    
+ 
+    return response.isLeft
+        ? []
+        : List<Profile>.from(response.right.map((e) => Profile.fromJson(e)));
   }
 }
